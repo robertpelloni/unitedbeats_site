@@ -5,17 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UnitedBeats</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            min-height: 100vh;
             background: #000;
             font-family: 'Inter', sans-serif;
             overflow: hidden;
-            cursor: crosshair;
+            cursor: none;
         }
-        canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; }
+        canvas { position: fixed; top: 0; left: 0; }
+        .cursor {
+            position: fixed;
+            width: 20px; height: 20px;
+            border: 2px solid rgba(255,215,0,0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1000;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s ease;
+            mix-blend-mode: screen;
+        }
+        .cursor::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 4px; height: 4px;
+            background: #ffd700;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
         .hero {
             position: fixed;
             top: 50%; left: 50%;
@@ -23,73 +42,145 @@
             text-align: center;
             z-index: 10;
             pointer-events: none;
+            opacity: 0;
+            animation: heroIn 4s ease 8s forwards;
+        }
+        @keyframes heroIn {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
         .logo {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(3rem, 8vw, 6rem);
-            font-weight: 700;
-            letter-spacing: 0.2em;
+            font-family: 'Cinzel', serif;
+            font-size: clamp(4rem, 10vw, 8rem);
+            font-weight: 900;
+            letter-spacing: 0.3em;
             text-transform: uppercase;
-            color: #fff;
-            text-shadow: 0 0 40px rgba(255,200,50,0.8), 0 0 80px rgba(255,100,0,0.4), 0 0 120px rgba(255,50,0,0.2);
+            background: linear-gradient(135deg, #fff 0%, #ffd700 20%, #ff6b35 40%, #ff1493 60%, #8a2be2 80%, #00bfff 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: textShimmer 3s linear infinite;
+            filter: drop-shadow(0 0 30px rgba(255,215,0,0.5)) drop-shadow(0 0 60px rgba(255,100,0,0.3));
+        }
+        @keyframes textShimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+        .tagline {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            font-weight: 400;
+            letter-spacing: 1em;
+            text-transform: uppercase;
+            color: rgba(255,215,0,0.6);
+            margin-top: 1rem;
+        }
+        .subtitle {
+            font-size: 0.8rem;
+            letter-spacing: 0.5em;
+            color: rgba(255,255,255,0.2);
+            margin-top: 2rem;
             opacity: 0;
-            animation: fadeIn 3s ease 5s forwards;
+            animation: fadeIn 2s ease 10s forwards;
         }
         @keyframes fadeIn { to { opacity: 1; } }
-        .tagline {
-            font-size: clamp(0.8rem, 2vw, 1.2rem);
-            font-weight: 300;
-            letter-spacing: 0.6em;
-            text-transform: uppercase;
-            color: rgba(255,200,50,0.5);
-            margin-top: 1rem;
-            opacity: 0;
-            animation: fadeIn 3s ease 6s forwards;
-        }
         .footer {
             position: fixed;
             bottom: 2rem;
             left: 0; right: 0;
             text-align: center;
-            font-size: 0.7rem;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.2);
             z-index: 10;
             opacity: 0;
-            animation: fadeIn 2s ease 7s forwards;
+            animation: fadeIn 2s ease 11s forwards;
         }
-        .footer a { color: rgba(255,200,50,0.4); text-decoration: none; }
-        .footer a:hover { color: #ffd700; }
+        .footer a {
+            color: rgba(255,215,0,0.3);
+            text-decoration: none;
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+        }
+        .footer a:hover {
+            color: #ffd700;
+            border-color: rgba(255,215,0,0.3);
+            text-shadow: 0 0 20px rgba(255,215,0,0.5);
+        }
+        .stats {
+            position: fixed;
+            top: 2rem; right: 2rem;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.3);
+            text-align: right;
+            z-index: 10;
+            opacity: 0;
+            animation: fadeIn 2s ease 12s forwards;
+        }
+        .click-hint {
+            position: fixed;
+            bottom: 5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: rgba(255,215,0,0.3);
+            letter-spacing: 0.3em;
+            z-index: 10;
+            opacity: 0;
+            animation: fadeIn 2s ease 9s forwards, pulse 3s ease-in-out 9s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
     </style>
 </head>
 <body>
     <canvas id="canvas"></canvas>
+    <div class="cursor" id="cursor"></div>
+
     <div class="hero">
         <h1 class="logo">UnitedBeats</h1>
         <p class="tagline">The Collective</p>
+        <p class="subtitle">52 souls · 1 universe</p>
     </div>
+
+    <div class="click-hint">CLICK ANYWHERE TO CREATE SUPERNOVAE</div>
+
+    <div class="stats" id="stats"></div>
+
     <div class="footer">
         <a href="https://unitedbeats.org">unitedbeats.org</a>
-        &nbsp;&middot;&nbsp;
         <a href="https://unitedbeats.net">unitedbeats.net</a>
-        &nbsp;&middot;&nbsp;
         <a href="https://unitedbeats.site">unitedbeats.site</a>
     </div>
 
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        let W, H, cx, cy;
+        const cursor = document.getElementById('cursor');
+        let W, H, cx, cy, mouseX, mouseY;
 
         function resize() {
             W = canvas.width = window.innerWidth;
             H = canvas.height = window.innerHeight;
             cx = W / 2;
             cy = H / 2;
+            mouseX = cx;
+            mouseY = cy;
         }
         resize();
         window.addEventListener('resize', resize);
+
+        // Custom cursor
+        document.addEventListener('mousemove', e => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursor.style.left = mouseX + 'px';
+            cursor.style.top = mouseY + 'px';
+        });
 
         const names = [
             'Robert Pelloni','Harry Korlous','Lumbros Korlous','Phil','Michael',
@@ -101,299 +192,424 @@
             'Bryonna','Sam','Charles','Jason','Hank','Matthew','Derek','Gregg'
         ];
 
-        // Background stars
-        const bgStars = Array.from({length: 400}, () => ({
-            x: Math.random() * 2000 - 500,
-            y: Math.random() * 2000 - 500,
-            s: Math.random() * 2 + 0.5,
-            o: Math.random(),
-            tw: Math.random() * 6.28
-        }));
+        // Deep space background
+        const layers = [
+            { stars: [], speed: 0.05, size: 0.5, count: 200 },
+            { stars: [], speed: 0.1, size: 1, count: 150 },
+            { stars: [], speed: 0.2, size: 1.5, count: 100 },
+            { stars: [], speed: 0.3, size: 2, count: 50 }
+        ];
 
-        // Debris particles
-        const debris = [];
-        for (let i = 0; i < 200; i++) {
-            const angle = Math.random() * Math.PI * 2;
-            const speed = 2 + Math.random() * 8;
-            debris.push({
-                x: cx, y: cy,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                size: Math.random() * 3 + 1,
-                life: 1,
-                decay: 0.002 + Math.random() * 0.005,
-                color: `hsl(${30 + Math.random() * 30}, 100%, ${50 + Math.random() * 50}%)`
+        layers.forEach(layer => {
+            for (let i = 0; i < layer.count; i++) {
+                layer.stars.push({
+                    x: Math.random() * 3000 - 500,
+                    y: Math.random() * 3000 - 500,
+                    o: Math.random(),
+                    tw: Math.random() * 6.28,
+                    hue: Math.random() > 0.9 ? Math.random() * 60 + 20 : 0
+                });
+            }
+        });
+
+        // Galaxy spiral particles
+        const galaxy = [];
+        for (let i = 0; i < 500; i++) {
+            const angle = Math.random() * 6.28 * 3;
+            const dist = 50 + Math.random() * 400;
+            galaxy.push({
+                angle, dist,
+                speed: 0.0002 + Math.random() * 0.0005,
+                size: Math.random() * 2 + 0.5,
+                hue: Math.random() * 40 + 20,
+                o: Math.random() * 0.5 + 0.1
             });
         }
 
-        // Shockwave rings
-        const shockwaves = [];
-        for (let i = 0; i < 5; i++) {
-            shockwaves.push({ radius: 0, speed: 3 + i * 2, opacity: 0.5 - i * 0.08, delay: i * 0.3 });
+        // Supernova class
+        class Supernova {
+            constructor(x, y, isMain = false) {
+                this.x = x;
+                this.y = y;
+                this.isMain = isMain;
+                this.time = 0;
+                this.phase = 0;
+                this.alive = true;
+                this.debris = [];
+                this.rings = [];
+                this.names = [];
+
+                // Create debris
+                for (let i = 0; i < (isMain ? 400 : 100); i++) {
+                    const angle = Math.random() * 6.28;
+                    const speed = 1 + Math.random() * (isMain ? 12 : 6);
+                    this.debris.push({
+                        x, y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        size: Math.random() * (isMain ? 4 : 2) + 0.5,
+                        life: 1,
+                        decay: 0.001 + Math.random() * 0.004,
+                        hue: Math.random() * 60 + 10
+                    });
+                }
+
+                // Shockwave rings
+                for (let i = 0; i < (isMain ? 8 : 3); i++) {
+                    this.rings.push({ radius: 0, speed: 4 + i * 3, opacity: 0.6 - i * 0.06, delay: i * 0.2 });
+                }
+
+                // Assign names if main
+                if (isMain) {
+                    this.names = names.map((name, i) => {
+                        const angle = (i / names.length) * 6.28 + (Math.random() - 0.5) * 0.5;
+                        const speed = 2 + Math.random() * 4;
+                        const colors = ['#ffd700','#ff6b35','#ff1493','#8a2be2','#00bfff','#ff4500','#7cfc00','#ff69b4','#00ced1','#ffa500','#ff6ec7','#7fffd4','#ff00ff','#ffff00','#00ff00'];
+                        return {
+                            name, x, y,
+                            vx: Math.cos(angle) * speed,
+                            vy: Math.sin(angle) * speed,
+                            angle, size: 0.7 + Math.random() * 0.7,
+                            color: colors[i % colors.length],
+                            opacity: 0,
+                            delay: 0.5 + Math.random() * 2,
+                            trail: [],
+                            maxTrail: 15 + Math.floor(Math.random() * 25),
+                            phase: Math.random() * 6.28,
+                            wobble: 0.3 + Math.random() * 2,
+                            finalOrbit: 80 + Math.random() * 300,
+                            finalAngle: Math.random() * 6.28,
+                            finalSpeed: 0.0003 + Math.random() * 0.003,
+                            settled: false
+                        };
+                    });
+                }
+            }
+
+            update(dt) {
+                this.time += dt;
+                if (this.time < 2) this.phase = 0;
+                else if (this.time < 5) this.phase = 1;
+                else this.phase = 2;
+
+                // Update debris
+                this.debris.forEach(d => {
+                    d.x += d.vx;
+                    d.y += d.vy;
+                    d.vx *= 0.997;
+                    d.vy *= 0.997;
+                    d.life -= d.decay;
+                });
+                this.debris = this.debris.filter(d => d.life > 0);
+
+                // Update names
+                this.names.forEach(p => {
+                    if (this.time < p.delay) return;
+                    const age = this.time - p.delay;
+
+                    if (this.phase <= 1) {
+                        const force = Math.min(1, age * 0.3);
+                        p.x = this.x + p.vx * age * 100 * force;
+                        p.y = this.y + p.vy * age * 100 * force;
+                        p.opacity = Math.min(1, age * 0.3);
+                    } else {
+                        if (!p.settled) p.settled = true;
+                        p.finalAngle += p.finalSpeed;
+                        const wx = Math.sin(this.time * p.wobble + p.phase) * 40;
+                        const wy = Math.cos(this.time * p.wobble * 0.7 + p.phase) * 40;
+                        const tx = this.x + Math.cos(p.finalAngle) * p.finalOrbit + wx;
+                        const ty = this.y + Math.sin(p.finalAngle) * p.finalOrbit + wy;
+                        p.x += (tx - p.x) * 0.015;
+                        p.y += (ty - p.y) * 0.015;
+                        p.opacity = 0.6 + 0.4 * Math.sin(this.time * 2 + p.phase);
+                    }
+
+                    p.trail.push({x: p.x, y: p.y});
+                    if (p.trail.length > p.maxTrail) p.trail.shift();
+                });
+
+                if (this.phase === 2 && this.debris.length === 0 && !this.isMain) {
+                    this.alive = this.names.length > 0;
+                }
+            }
+
+            draw() {
+                // Star collapse/explosion
+                if (this.phase === 0) {
+                    const collapse = this.time / 2;
+                    const r = 3 + collapse * 30 + Math.sin(this.time * 8) * collapse * 10;
+                    const glow = 20 + collapse * 60;
+                    this.drawStar(this.x, this.y, r, glow);
+                }
+
+                // Flash
+                if (this.time > 2 && this.time < 2.3) {
+                    const flash = (this.time - 2) / 0.3;
+                    ctx.fillStyle = `rgba(255,255,255,${(1-flash) * 0.5})`;
+                    ctx.fillRect(0, 0, W, H);
+                }
+
+                // Fading core
+                if (this.phase === 1) {
+                    const fade = 1 - (this.time - 2) / 3;
+                    if (fade > 0) this.drawStar(this.x, this.y, 8 * fade, 40 * fade);
+                }
+
+                // Shockwaves
+                this.rings.forEach(ring => {
+                    const t = this.time - ring.delay;
+                    if (t < 0) return;
+                    ring.radius = t * 250 * ring.speed;
+                    const o = Math.max(0, ring.opacity * (1 - t * 0.08));
+                    if (o <= 0) return;
+
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, ring.radius, 0, 6.28);
+                    ctx.strokeStyle = `rgba(255,200,100,${o})`;
+                    ctx.lineWidth = 3 + (1 - t * 0.05) * 10;
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, ring.radius * 0.98, 0, 6.28);
+                    ctx.strokeStyle = `rgba(255,255,255,${o * 0.3})`;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                });
+
+                // Debris
+                this.debris.forEach(d => {
+                    ctx.beginPath();
+                    ctx.arc(d.x, d.y, d.size * d.life, 0, 6.28);
+                    ctx.fillStyle = `hsla(${d.hue}, 100%, ${50 + d.life * 50}%, ${d.life * 0.8})`;
+                    ctx.fill();
+                    // Glow
+                    if (d.size > 2) {
+                        ctx.beginPath();
+                        ctx.arc(d.x, d.y, d.size * d.life * 3, 0, 6.28);
+                        ctx.fillStyle = `hsla(${d.hue}, 100%, 50%, ${d.life * 0.1})`;
+                        ctx.fill();
+                    }
+                });
+
+                // Names
+                this.names.forEach(p => {
+                    if (this.time < p.delay) return;
+
+                    // Trail
+                    if (p.trail.length > 1) {
+                        ctx.beginPath();
+                        ctx.moveTo(p.trail[0].x, p.trail[0].y);
+                        for (let i = 1; i < p.trail.length; i++) {
+                            ctx.lineTo(p.trail[i].x, p.trail[i].y);
+                        }
+                        ctx.strokeStyle = p.color;
+                        ctx.globalAlpha = p.opacity * 0.1;
+                        ctx.lineWidth = p.size * 12;
+                        ctx.lineCap = 'round';
+                        ctx.stroke();
+                        ctx.globalAlpha = 1;
+                    }
+
+                    // Name glow
+                    ctx.save();
+                    ctx.globalAlpha = p.opacity;
+                    ctx.font = `bold ${p.size * 20}px 'Cinzel', serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+
+                    // Outer glow
+                    ctx.shadowColor = p.color;
+                    ctx.shadowBlur = 30;
+                    ctx.fillStyle = p.color;
+                    ctx.fillText(p.name, p.x, p.y);
+
+                    // Inner glow
+                    ctx.shadowBlur = 10;
+                    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+                    ctx.fillText(p.name, p.x, p.y);
+
+                    ctx.restore();
+                });
+            }
+
+            drawStar(x, y, r, glow) {
+                // Corona
+                const corona = ctx.createRadialGradient(x, y, 0, x, y, r * 10 + glow);
+                corona.addColorStop(0, 'rgba(255,255,255,0.95)');
+                corona.addColorStop(0.05, 'rgba(255,240,200,0.8)');
+                corona.addColorStop(0.2, 'rgba(255,180,80,0.4)');
+                corona.addColorStop(0.5, 'rgba(255,100,30,0.1)');
+                corona.addColorStop(1, 'transparent');
+                ctx.fillStyle = corona;
+                ctx.fillRect(x-r*12, y-r*12, r*24, r*24);
+
+                // Spikes
+                ctx.save();
+                ctx.translate(x, y);
+                for (let i = 0; i < 16; i++) {
+                    ctx.rotate(0.393);
+                    const len = r * 8 + glow * 3 + Math.sin(this.time * 4 + i) * r * 3;
+                    const g = ctx.createLinearGradient(0, 0, len, 0);
+                    g.addColorStop(0, 'rgba(255,230,150,0.9)');
+                    g.addColorStop(0.5, 'rgba(255,180,80,0.3)');
+                    g.addColorStop(1, 'transparent');
+                    ctx.beginPath();
+                    ctx.moveTo(0, -1.5);
+                    ctx.quadraticCurveTo(len * 0.5, -3, len, 0);
+                    ctx.quadraticCurveTo(len * 0.5, 3, 0, 1.5);
+                    ctx.fillStyle = g;
+                    ctx.fill();
+                }
+                ctx.restore();
+
+                // Core
+                const core = ctx.createRadialGradient(x, y, 0, x, y, r * 2);
+                core.addColorStop(0, '#fff');
+                core.addColorStop(0.3, 'rgba(255,250,230,0.9)');
+                core.addColorStop(0.7, 'rgba(255,200,100,0.3)');
+                core.addColorStop(1, 'transparent');
+                ctx.beginPath();
+                ctx.arc(x, y, r * 2, 0, 6.28);
+                ctx.fillStyle = core;
+                ctx.fill();
+            }
         }
 
-        // Name particles
-        const particles = names.map((name, i) => {
-            const angle = (i / names.length) * Math.PI * 2 + (Math.random() - 0.5) * 0.3;
-            const speed = 1.5 + Math.random() * 3;
-            const colors = ['#ffd700','#ff6b35','#ff1493','#8a2be2','#00bfff','#ff4500','#7cfc00','#ff69b4','#00ced1','#ffa500','#ff6ec7','#7fffd4'];
-            return {
-                name, x: cx, y: cy,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                angle, size: 0.8 + Math.random() * 0.6,
-                color: colors[i % colors.length],
-                opacity: 0,
-                delay: 1 + Math.random() * 2,
-                trail: [],
-                maxTrail: 20 + Math.floor(Math.random() * 20),
-                phase: Math.random() * 6.28,
-                wobble: 0.5 + Math.random() * 1.5,
-                finalOrbit: 100 + Math.random() * 250,
-                finalAngle: Math.random() * 6.28,
-                finalSpeed: 0.0005 + Math.random() * 0.002
-            };
+        // Main supernova
+        let mainSupernova = null;
+        let userSupernovae = [];
+        let time = 0;
+
+        // Click to create supernova
+        canvas.addEventListener('click', e => {
+            userSupernovae.push(new Supernova(e.clientX, e.clientY, false));
+            cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
+            setTimeout(() => cursor.style.transform = 'translate(-50%, -50%) scale(1)', 200);
         });
 
-        let time = 0;
-        let phase = 0; // 0=collapse, 1=explosion, 2=settle
+        // Stats
+        const statsEl = document.getElementById('stats');
+        let fps = 0, frameCount = 0, lastFpsTime = 0;
 
-        function drawNebula() {
-            // Deep space
+        function animate(timestamp) {
+            const dt = 0.016;
+            time += dt;
+
+            // FPS
+            frameCount++;
+            if (timestamp - lastFpsTime > 1000) {
+                fps = frameCount;
+                frameCount = 0;
+                lastFpsTime = timestamp;
+                statsEl.textContent = `${fps} FPS · ${names.length} souls · ${userSupernovae.length + (mainSupernova ? 1 : 0)} supernovae`;
+            }
+
+            // Background
             ctx.fillStyle = '#000';
             ctx.fillRect(0, 0, W, H);
 
-            // Nebula glow
-            for (let i = 0; i < 3; i++) {
-                const g = ctx.createRadialGradient(cx + Math.sin(time*0.2+i)*100, cy + Math.cos(time*0.2+i)*80, 0, cx, cy, 600);
-                g.addColorStop(0, `hsla(${(time*20+i*120)%360}, 80%, 20%, 0.02)`);
-                g.addColorStop(1, 'transparent');
-                ctx.fillStyle = g;
+            // Nebula
+            for (let i = 0; i < 4; i++) {
+                const nx = cx + Math.sin(time * 0.1 + i * 1.5) * 300;
+                const ny = cy + Math.cos(time * 0.1 + i * 1.5) * 200;
+                const neb = ctx.createRadialGradient(nx, ny, 0, nx, ny, 500);
+                const hue = (time * 15 + i * 90) % 360;
+                neb.addColorStop(0, `hsla(${hue}, 80%, 30%, 0.02)`);
+                neb.addColorStop(0.5, `hsla(${hue + 30}, 70%, 20%, 0.01)`);
+                neb.addColorStop(1, 'transparent');
+                ctx.fillStyle = neb;
                 ctx.fillRect(0, 0, W, H);
             }
 
-            // Stars
-            bgStars.forEach(s => {
-                s.tw += 0.03;
-                ctx.beginPath();
-                ctx.arc(s.x, s.y, s.s, 0, 6.28);
-                ctx.fillStyle = `rgba(255,255,255,${s.o * (0.4+0.6*Math.sin(s.tw))})`;
-                ctx.fill();
-            });
-        }
-
-        function drawStar(x, y, r, glow) {
-            // Corona
-            const corona = ctx.createRadialGradient(x, y, 0, x, y, r * 8 + glow);
-            corona.addColorStop(0, 'rgba(255,255,255,0.9)');
-            corona.addColorStop(0.1, 'rgba(255,220,100,0.6)');
-            corona.addColorStop(0.3, 'rgba(255,150,50,0.3)');
-            corona.addColorStop(0.6, 'rgba(255,80,20,0.1)');
-            corona.addColorStop(1, 'transparent');
-            ctx.fillStyle = corona;
-            ctx.fillRect(x-r*10, y-r*10, r*20, r*20);
-
-            // Spikes
-            ctx.save();
-            ctx.translate(x, y);
-            for (let i = 0; i < 12; i++) {
-                ctx.rotate(0.524);
-                const len = r * 6 + glow * 2 + Math.sin(time*3+i) * r * 2;
-                const g = ctx.createLinearGradient(0, 0, len, 0);
-                g.addColorStop(0, 'rgba(255,220,100,0.8)');
-                g.addColorStop(1, 'transparent');
-                ctx.beginPath();
-                ctx.moveTo(0, -1);
-                ctx.lineTo(len, 0);
-                ctx.lineTo(0, 1);
-                ctx.fillStyle = g;
-                ctx.fill();
-            }
-            ctx.restore();
-
-            // Core
-            const core = ctx.createRadialGradient(x, y, 0, x, y, r);
-            core.addColorStop(0, '#fff');
-            core.addColorStop(0.5, 'rgba(255,240,200,0.9)');
-            core.addColorStop(1, 'rgba(255,200,100,0)');
-            ctx.beginPath();
-            ctx.arc(x, y, r, 0, 6.28);
-            ctx.fillStyle = core;
-            ctx.fill();
-        }
-
-        function drawShockwaves() {
-            shockwaves.forEach(sw => {
-                const t = time - sw.delay;
-                if (t < 0) return;
-                sw.radius = t * 200 * sw.speed;
-                const o = Math.max(0, sw.opacity * (1 - t * 0.15));
-                if (o <= 0) return;
-
-                ctx.beginPath();
-                ctx.arc(cx, cy, sw.radius, 0, 6.28);
-                ctx.strokeStyle = `rgba(255,200,100,${o})`;
-                ctx.lineWidth = 2 + (1 - t*0.1) * 8;
-                ctx.stroke();
-
-                // Inner glow
-                ctx.beginPath();
-                ctx.arc(cx, cy, sw.radius, 0, 6.28);
-                ctx.strokeStyle = `rgba(255,255,255,${o * 0.5})`;
-                ctx.lineWidth = 1;
-                ctx.stroke();
-            });
-        }
-
-        function drawDebris() {
-            debris.forEach(d => {
-                if (time < 1.5) return;
-                d.x += d.vx;
-                d.y += d.vy;
-                d.vx *= 0.995;
-                d.vy *= 0.995;
-                d.life -= d.decay;
-
-                if (d.life > 0) {
-                    ctx.beginPath();
-                    ctx.arc(d.x, d.y, d.size * d.life, 0, 6.28);
-                    ctx.fillStyle = d.color;
-                    ctx.globalAlpha = d.life * 0.7;
-                    ctx.fill();
-                    ctx.globalAlpha = 1;
-                }
-            });
-        }
-
-        function animate() {
-            time += 0.016;
-            drawNebula();
-
-            // Phase transitions
-            if (time < 2) phase = 0;
-            else if (time < 4.5) phase = 1;
-            else phase = 2;
-
-            // Collapse phase
-            if (phase === 0) {
-                const collapse = Math.min(1, time / 2);
-                const starR = 3 + collapse * 20 + Math.sin(time * 5) * collapse * 5;
-                const glow = 10 + collapse * 40;
-                drawStar(cx, cy, starR, glow);
-
-                // Pre-explosion flicker
-                if (time > 1.5) {
-                    const flicker = Math.random() > 0.7 ? 1.5 : 1;
-                    drawStar(cx, cy, starR * flicker, glow * flicker);
-                }
-            }
-
-            // Explosion phase
-            if (phase >= 1) {
-                drawShockwaves();
-                drawDebris();
-
-                // Fading star
-                if (phase === 1) {
-                    const fade = 1 - (time - 2) / 2.5;
-                    drawStar(cx, cy, 5 * fade, 30 * fade);
-                }
-
-                // Supernova flash
-                if (time > 2 && time < 2.5) {
-                    const flash = (time - 2) / 0.5;
-                    ctx.fillStyle = `rgba(255,255,255,${(1-flash) * 0.3})`;
-                    ctx.fillRect(0, 0, W, H);
-                }
-            }
-
-            // Name particles
-            particles.forEach(p => {
-                if (time < p.delay) return;
-
-                const age = time - p.delay;
-
-                if (phase <= 1) {
-                    // Explosion outward
-                    const explosionForce = Math.min(1, age * 0.5);
-                    p.x = cx + p.vx * age * 80 * explosionForce;
-                    p.y = cy + p.vy * age * 80 * explosionForce;
-                    p.opacity = Math.min(1, age * 0.5);
-                } else {
-                    // Settle into orbits
-                    p.finalAngle += p.finalSpeed;
-                    const wobbleX = Math.sin(time * p.wobble + p.phase) * 30;
-                    const wobbleY = Math.cos(time * p.wobble * 0.7 + p.phase) * 30;
-                    const tx = cx + Math.cos(p.finalAngle) * p.finalOrbit + wobbleX;
-                    const ty = cy + Math.sin(p.finalAngle) * p.finalOrbit + wobbleY;
-                    p.x += (tx - p.x) * 0.02;
-                    p.y += (ty - p.y) * 0.02;
-                    p.opacity = 0.7 + 0.3 * Math.sin(time * 2 + p.phase);
-                }
-
-                // Trail
-                p.trail.push({x: p.x, y: p.y});
-                if (p.trail.length > p.maxTrail) p.trail.shift();
-
-                // Draw trail
-                if (p.trail.length > 1) {
-                    ctx.beginPath();
-                    ctx.moveTo(p.trail[0].x, p.trail[0].y);
-                    for (let i = 1; i < p.trail.length; i++) {
-                        ctx.lineTo(p.trail[i].x, p.trail[i].y);
+            // Parallax stars
+            const mx = (mouseX - cx) * 0.01;
+            const my = (mouseY - cy) * 0.01;
+            layers.forEach((layer, li) => {
+                layer.stars.forEach(s => {
+                    s.tw += 0.02;
+                    const px = s.x + mx * layer.speed * 100;
+                    const py = s.y + my * layer.speed * 100;
+                    const o = s.o * (0.3 + 0.7 * Math.sin(s.tw));
+                    if (s.hue > 0) {
+                        ctx.fillStyle = `hsla(${s.hue}, 80%, 70%, ${o})`;
+                    } else {
+                        ctx.fillStyle = `rgba(255,255,255,${o})`;
                     }
-                    ctx.strokeStyle = p.color;
-                    ctx.globalAlpha = p.opacity * 0.15;
-                    ctx.lineWidth = p.size * 8;
-                    ctx.lineCap = 'round';
-                    ctx.stroke();
-                    ctx.globalAlpha = 1;
-                }
-
-                // Draw name
-                ctx.save();
-                ctx.globalAlpha = p.opacity;
-                ctx.font = `bold ${p.size * 18}px 'Playfair Display', serif`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-
-                // Glow
-                ctx.shadowColor = p.color;
-                ctx.shadowBlur = 20;
-                ctx.fillStyle = p.color;
-                ctx.fillText(p.name, p.x, p.y);
-
-                // Bright core
-                ctx.shadowBlur = 0;
-                ctx.fillStyle = 'rgba(255,255,255,0.5)';
-                ctx.fillText(p.name, p.x, p.y);
-
-                ctx.restore();
+                    ctx.beginPath();
+                    ctx.arc(px, py, layer.size, 0, 6.28);
+                    ctx.fill();
+                });
             });
 
-            // Cosmic dust connecting lines (in settle phase)
-            if (phase === 2) {
-                particles.forEach((p1, i) => {
-                    particles.slice(i+1).forEach(p2 => {
-                        const dx = p1.x - p2.x;
-                        const dy = p1.y - p2.y;
-                        const dist = Math.sqrt(dx*dx + dy*dy);
+            // Galaxy
+            galaxy.forEach(g => {
+                g.angle += g.speed;
+                const gx = cx + Math.cos(g.angle) * g.dist + Math.sin(time * 0.1) * 50;
+                const gy = cy + Math.sin(g.angle) * g.dist * 0.4 + Math.cos(time * 0.1) * 30;
+                ctx.beginPath();
+                ctx.arc(gx, gy, g.size, 0, 6.28);
+                ctx.fillStyle = `hsla(${g.hue}, 60%, 60%, ${g.o * 0.3})`;
+                ctx.fill();
+            });
+
+            // Create main supernova after 1s
+            if (!mainSupernova && time > 1) {
+                mainSupernova = new Supernova(cx, cy, true);
+            }
+
+            // Update & draw supernovae
+            if (mainSupernova) {
+                mainSupernova.update(dt);
+                mainSupernova.draw();
+            }
+
+            userSupernovae = userSupernovae.filter(sn => {
+                sn.update(dt);
+                sn.draw();
+                return sn.alive;
+            });
+
+            // Draw connecting lines between settled names
+            if (mainSupernova && mainSupernova.phase === 2) {
+                const settled = mainSupernova.names.filter(n => n.settled);
+                settled.forEach((n1, i) => {
+                    settled.slice(i + 1).forEach(n2 => {
+                        const dx = n1.x - n2.x;
+                        const dy = n1.y - n2.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
                         if (dist < 200) {
+                            const o = (1 - dist / 200) * 0.1;
                             ctx.beginPath();
-                            ctx.moveTo(p1.x, p1.y);
-                            ctx.lineTo(p2.x, p2.y);
-                            ctx.strokeStyle = `rgba(255,200,100,${(1-dist/200)*0.08})`;
+                            ctx.moveTo(n1.x, n1.y);
+                            ctx.lineTo(n2.x, n2.y);
+                            ctx.strokeStyle = `rgba(255,200,100,${o})`;
                             ctx.lineWidth = 0.5;
                             ctx.stroke();
                         }
                     });
+                });
+
+                // Mouse gravity effect
+                settled.forEach(p => {
+                    const dx = mouseX - p.x;
+                    const dy = mouseY - p.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 300) {
+                        const force = (1 - dist / 300) * 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p.x + dx * force * 0.1, p.y + dy * force * 0.1);
+                        ctx.strokeStyle = `rgba(255,215,0,${force * 0.3})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
                 });
             }
 
             requestAnimationFrame(animate);
         }
 
-        animate();
+        animate(0);
     </script>
 </body>
 </html>
