@@ -272,7 +272,7 @@
     <div class="hero">
       <h1 class="logo">UnitedBeats</h1>
       <p class="tagline">Detroit</p>
-      <p class="subtitle">60 souls · 1 universe</p>
+      <p class="subtitle">63 souls · 1 universe</p>
     </div>
 
     <div class="click-hint">CLICK ANYWHERE TO CREATE SUPERNOVAE</div>
@@ -378,6 +378,9 @@
         "Liz",
         "Wayne",
         "Josh",
+        "Neil",
+        "Jack",
+        "Steve",
       ];
 
       // Deep space background
@@ -433,7 +436,8 @@
 
           // Create filaments (long tendrils of gas)
           for (let i = 0; i < (isMain ? 24 : 8); i++) {
-            const angle = (i / (isMain ? 24 : 8)) * 6.28 + (Math.random() - 0.5) * 0.3;
+            const angle =
+              (i / (isMain ? 24 : 8)) * 6.28 + (Math.random() - 0.5) * 0.3;
             const length = 100 + Math.random() * 300;
             const points = [];
             for (let j = 0; j < 20; j++) {
@@ -441,15 +445,17 @@
               points.push({
                 ox: Math.cos(angle) * length * t + (Math.random() - 0.5) * 30,
                 oy: Math.sin(angle) * length * t + (Math.random() - 0.5) * 30,
-                wobble: Math.random() * 6.28
+                wobble: Math.random() * 6.28,
               });
             }
             this.filaments.push({
-              angle, length, points,
+              angle,
+              length,
+              points,
               width: 2 + Math.random() * 4,
               hue: Math.random() > 0.5 ? 0 : 30, // red or orange
               speed: 0.5 + Math.random() * 1.5,
-              opacity: 0.6 + Math.random() * 0.4
+              opacity: 0.6 + Math.random() * 0.4,
             });
           }
 
@@ -458,14 +464,15 @@
             const angle = Math.random() * 6.28;
             const speed = 0.5 + Math.random() * 2;
             this.ejecta.push({
-              x, y,
+              x,
+              y,
               vx: Math.cos(angle) * speed,
               vy: Math.sin(angle) * speed,
               size: 3 + Math.random() * 8,
               life: 1,
               decay: 0.0005 + Math.random() * 0.001,
               hue: Math.random() * 40, // red-orange-yellow
-              brightness: 50 + Math.random() * 50
+              brightness: 50 + Math.random() * 50,
             });
           }
 
@@ -478,7 +485,7 @@
               opacity: 0.4 - i * 0.08,
               delay: i * 0.3,
               width: 20 + Math.random() * 30,
-              hue: i * 10 // each shell slightly different color
+              hue: i * 10, // each shell slightly different color
             });
           }
 
@@ -487,13 +494,14 @@
             const angle = Math.random() * 6.28;
             const speed = 0.5 + Math.random() * (isMain ? 8 : 4);
             this.debris.push({
-              x, y,
+              x,
+              y,
               vx: Math.cos(angle) * speed,
               vy: Math.sin(angle) * speed,
               size: Math.random() * (isMain ? 3 : 1.5) + 0.3,
               life: 1,
               decay: 0.0008 + Math.random() * 0.003,
-              hue: Math.random() * 60 + 10
+              hue: Math.random() * 60 + 10,
             });
           }
 
@@ -503,21 +511,38 @@
               radius: 0,
               speed: 3 + i * 2,
               opacity: 0.5 - i * 0.06,
-              delay: i * 0.4
+              delay: i * 0.4,
             });
           }
 
           // Assign names if main
           if (isMain) {
             this.names = names.map((name, i) => {
-              const angle = (i / names.length) * 6.28 + (Math.random() - 0.5) * 0.5;
+              const angle =
+                (i / names.length) * 6.28 + (Math.random() - 0.5) * 0.5;
               const speed = 1.5 + Math.random() * 3;
-              const colors = ['#ffd700','#ff6b35','#ff1493','#8a2be2','#00bfff','#ff4500','#7cfc00','#ff69b4','#00ced1','#ffa500','#ff6ec7','#7fffd4'];
+              const colors = [
+                "#ffd700",
+                "#ff6b35",
+                "#ff1493",
+                "#8a2be2",
+                "#00bfff",
+                "#ff4500",
+                "#7cfc00",
+                "#ff69b4",
+                "#00ced1",
+                "#ffa500",
+                "#ff6ec7",
+                "#7fffd4",
+              ];
               return {
-                name, x, y,
+                name,
+                x,
+                y,
                 vx: Math.cos(angle) * speed,
                 vy: Math.sin(angle) * speed,
-                angle, size: 0.7 + Math.random() * 0.7,
+                angle,
+                size: 0.7 + Math.random() * 0.7,
                 color: colors[i % colors.length],
                 opacity: 0,
                 delay: 0.3 + Math.random() * 2,
@@ -528,7 +553,7 @@
                 finalOrbit: 80 + Math.random() * 300,
                 finalAngle: Math.random() * 6.28,
                 finalSpeed: 0.0003 + Math.random() * 0.003,
-                settled: false
+                settled: false,
               };
             });
           }
@@ -598,21 +623,29 @@
             ctx.fillStyle = `rgba(255,255,255,${flash * 0.9})`;
             ctx.fillRect(0, 0, W, H);
             // Blue-white core flash
-            const core = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, 300 * (1 + t * 2));
+            const core = ctx.createRadialGradient(
+              this.x,
+              this.y,
+              0,
+              this.x,
+              this.y,
+              300 * (1 + t * 2),
+            );
             core.addColorStop(0, `rgba(200,220,255,${flash * 0.8})`);
             core.addColorStop(0.3, `rgba(255,255,255,${flash * 0.5})`);
-            core.addColorStop(1, 'transparent');
+            core.addColorStop(1, "transparent");
             ctx.fillStyle = core;
             ctx.fillRect(0, 0, W, H);
           }
 
           // Expanding gas shells
-          this.shells.forEach(shell => {
+          this.shells.forEach((shell) => {
             const t = this.time - shell.delay;
             if (t < 0) return;
             shell.radius = Math.min(shell.maxRadius, t * 150 * shell.speed);
             const progress = shell.radius / shell.maxRadius;
-            const o = shell.opacity * (1 - progress) * (1 - Math.max(0, (t - 3) / 5));
+            const o =
+              shell.opacity * (1 - progress) * (1 - Math.max(0, (t - 3) / 5));
             if (o <= 0.01) return;
 
             // Outer shell edge
@@ -631,7 +664,7 @@
           });
 
           // Shockwave rings (thin bright lines)
-          this.rings.forEach(ring => {
+          this.rings.forEach((ring) => {
             const t = this.time - ring.delay;
             if (t < 0) return;
             ring.radius = t * 200 * ring.speed;
@@ -645,29 +678,31 @@
           });
 
           // Filaments (tendrils of gas)
-          this.filaments.forEach(f => {
+          this.filaments.forEach((f) => {
             const t = this.time - 2;
             if (t < 0) return;
-            const progress = Math.min(1, t * f.speed / 5);
+            const progress = Math.min(1, (t * f.speed) / 5);
             const o = f.opacity * (1 - progress * 0.3);
             ctx.beginPath();
             ctx.moveTo(this.x, this.y);
             for (let i = 0; i < f.points.length; i++) {
               const p = f.points[i];
-              const wobbleX = Math.sin(this.time * 2 + p.wobble) * 10 * progress;
-              const wobbleY = Math.cos(this.time * 2 + p.wobble) * 10 * progress;
+              const wobbleX =
+                Math.sin(this.time * 2 + p.wobble) * 10 * progress;
+              const wobbleY =
+                Math.cos(this.time * 2 + p.wobble) * 10 * progress;
               const px = this.x + p.ox * progress + wobbleX;
               const py = this.y + p.oy * progress + wobbleY;
               ctx.lineTo(px, py);
             }
             ctx.strokeStyle = `hsla(${f.hue}, 90%, 55%, ${o * 0.4})`;
             ctx.lineWidth = f.width * (1 - progress * 0.3);
-            ctx.lineCap = 'round';
+            ctx.lineCap = "round";
             ctx.stroke();
           });
 
           // Ejecta knots
-          this.ejecta.forEach(e => {
+          this.ejecta.forEach((e) => {
             const t = this.time - 2;
             if (t < 0) return;
             e.x += e.vx;
@@ -682,15 +717,27 @@
             ctx.fillStyle = `hsla(${e.hue}, 90%, ${e.brightness}%, ${e.life * 0.7})`;
             ctx.fill();
             // Glow
-            const glow = ctx.createRadialGradient(e.x, e.y, 0, e.x, e.y, e.size * e.life * 4);
+            const glow = ctx.createRadialGradient(
+              e.x,
+              e.y,
+              0,
+              e.x,
+              e.y,
+              e.size * e.life * 4,
+            );
             glow.addColorStop(0, `hsla(${e.hue}, 100%, 60%, ${e.life * 0.3})`);
-            glow.addColorStop(1, 'transparent');
+            glow.addColorStop(1, "transparent");
             ctx.fillStyle = glow;
-            ctx.fillRect(e.x - e.size * 4, e.y - e.size * 4, e.size * 8, e.size * 8);
+            ctx.fillRect(
+              e.x - e.size * 4,
+              e.y - e.size * 4,
+              e.size * 8,
+              e.size * 8,
+            );
           });
 
           // Dust/debris
-          this.debris.forEach(d => {
+          this.debris.forEach((d) => {
             d.x += d.vx;
             d.y += d.vy;
             d.vx *= 0.997;
@@ -711,10 +758,17 @@
               // Pulsar glow
               const pulse = 1 + Math.sin(this.time * 10) * 0.2;
               const r = 3 * fade * pulse;
-              const glow = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, r * 10);
+              const glow = ctx.createRadialGradient(
+                this.x,
+                this.y,
+                0,
+                this.x,
+                this.y,
+                r * 10,
+              );
               glow.addColorStop(0, `rgba(180,200,255,${fade * 0.8})`);
               glow.addColorStop(0.3, `rgba(100,150,255,${fade * 0.4})`);
-              glow.addColorStop(1, 'transparent');
+              glow.addColorStop(1, "transparent");
               ctx.fillStyle = glow;
               ctx.fillRect(this.x - r * 10, this.y - r * 10, r * 20, r * 20);
               // Core
@@ -726,7 +780,7 @@
           }
 
           // Names
-          this.names.forEach(p => {
+          this.names.forEach((p) => {
             if (this.time < p.delay) return;
             const age = this.time - p.delay;
 
@@ -748,16 +802,17 @@
             }
 
             // Trail
-            p.trail.push({x: p.x, y: p.y});
+            p.trail.push({ x: p.x, y: p.y });
             if (p.trail.length > p.maxTrail) p.trail.shift();
             if (p.trail.length > 1) {
               ctx.beginPath();
               ctx.moveTo(p.trail[0].x, p.trail[0].y);
-              for (let i = 1; i < p.trail.length; i++) ctx.lineTo(p.trail[i].x, p.trail[i].y);
+              for (let i = 1; i < p.trail.length; i++)
+                ctx.lineTo(p.trail[i].x, p.trail[i].y);
               ctx.strokeStyle = p.color;
               ctx.globalAlpha = p.opacity * 0.08;
               ctx.lineWidth = p.size * 10;
-              ctx.lineCap = 'round';
+              ctx.lineCap = "round";
               ctx.stroke();
               ctx.globalAlpha = 1;
             }
@@ -766,14 +821,14 @@
             ctx.save();
             ctx.globalAlpha = p.opacity;
             ctx.font = `bold ${p.size * 18}px 'Inter', sans-serif`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
             ctx.shadowColor = p.color;
             ctx.shadowBlur = 25;
             ctx.fillStyle = p.color;
             ctx.fillText(p.name, p.x, p.y);
             ctx.shadowBlur = 8;
-            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            ctx.fillStyle = "rgba(255,255,255,0.6)";
             ctx.fillText(p.name, p.x, p.y);
             ctx.restore();
           });
@@ -782,10 +837,26 @@
         drawStar(x, y, r, glow) {
           // Multi-layered corona
           const layers = [
-            {r: 15, stops: [[0, 'rgba(255,255,255,0.95)'], [0.2, 'rgba(255,240,200,0.7)'], [0.5, 'rgba(255,150,50,0.2)'], [1, 'transparent']]},
-            {r: 8, stops: [[0, 'rgba(255,255,255,1)'], [0.3, 'rgba(200,220,255,0.8)'], [0.7, 'rgba(100,150,255,0.3)'], [1, 'transparent']]}
+            {
+              r: 15,
+              stops: [
+                [0, "rgba(255,255,255,0.95)"],
+                [0.2, "rgba(255,240,200,0.7)"],
+                [0.5, "rgba(255,150,50,0.2)"],
+                [1, "transparent"],
+              ],
+            },
+            {
+              r: 8,
+              stops: [
+                [0, "rgba(255,255,255,1)"],
+                [0.3, "rgba(200,220,255,0.8)"],
+                [0.7, "rgba(100,150,255,0.3)"],
+                [1, "transparent"],
+              ],
+            },
           ];
-          layers.forEach(l => {
+          layers.forEach((l) => {
             const g = ctx.createRadialGradient(x, y, 0, x, y, r * l.r + glow);
             l.stops.forEach(([stop, color]) => g.addColorStop(stop, color));
             ctx.fillStyle = g;
@@ -799,9 +870,9 @@
             ctx.rotate(0.524);
             const len = r * 6 + glow * 2 + Math.sin(this.time * 3 + i) * r * 2;
             const g = ctx.createLinearGradient(0, 0, len, 0);
-            g.addColorStop(0, 'rgba(255,240,200,0.7)');
-            g.addColorStop(0.3, 'rgba(200,220,255,0.3)');
-            g.addColorStop(1, 'transparent');
+            g.addColorStop(0, "rgba(255,240,200,0.7)");
+            g.addColorStop(0.3, "rgba(200,220,255,0.3)");
+            g.addColorStop(1, "transparent");
             ctx.beginPath();
             ctx.moveTo(0, -0.8);
             ctx.quadraticCurveTo(len * 0.4, -2, len, 0);
@@ -813,10 +884,10 @@
 
           // Hot core
           const core = ctx.createRadialGradient(x, y, 0, x, y, r * 2);
-          core.addColorStop(0, '#fff');
-          core.addColorStop(0.2, 'rgba(200,220,255,0.9)');
-          core.addColorStop(0.5, 'rgba(255,240,200,0.5)');
-          core.addColorStop(1, 'transparent');
+          core.addColorStop(0, "#fff");
+          core.addColorStop(0.2, "rgba(200,220,255,0.9)");
+          core.addColorStop(0.5, "rgba(255,240,200,0.5)");
+          core.addColorStop(1, "transparent");
           ctx.beginPath();
           ctx.arc(x, y, r * 2, 0, 6.28);
           ctx.fillStyle = core;
