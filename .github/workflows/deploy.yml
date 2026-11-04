@@ -1,0 +1,44 @@
+name: Deploy to Hetzner
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-hetzner
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.HETZNER_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          cat >> ~/.ssh/config <<EOF
+          Host hetzner
+            HostName ${{ secrets.HETZNER_HOST }}
+            User ${{ secrets.HETZNER_USER || 'root' }}
+            Port ${{ secrets.HETZNER_PORT || '22' }}
+            IdentityFile ~/.ssh/id_ed25519
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+          EOF
+          chmod 600 ~/.ssh/config
+
+      - name: Sync Static Files to Remote Host
+        run: |
+          ssh hetzner "mkdir -p /var/www/unitedbeats"
+          scp index.html ads.txt hetzner:/var/www/unitedbeats/
+          ssh hetzner "chown -R www-data:www-data /var/www/unitedbeats && chmod -R 755 /var/www/unitedbeats"
+
+      - name: Verify and Reload Nginx
+        run: |
+          ssh hetzner "nginx -t && systemctl reload nginx"
