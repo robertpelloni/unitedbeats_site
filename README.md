@@ -1,8 +1,12 @@
 # UnitedBeats Website
 
-A classy, minimal website for the UnitedBeats collective.
+The website for the UnitedBeats collective — a single static page.
+The whole site is one 37 KB `index.html` (a classy tag-cloud / names page)
+plus an `ads.txt` and a Google AdSense verification snippet
+(`ca-pub-1203453275296694`, added September 2026). There is no build step,
+no framework, and no other code in the repo.
 
-## Domains
+## Domains (per the site itself)
 
 - unitedbeats.org
 - unitedbeats.net
@@ -10,12 +14,17 @@ A classy, minimal website for the UnitedBeats collective.
 
 ## Deployment
 
-Hosted on Hetzner. Deploy with:
+Hosted on Hetzner; `./deploy.sh` pushes the page.
 
-```bash
-./deploy.sh
-```
+## Names featured on the page
 
-## Names Featured
+Robert Pelloni, Harry Korlous, Lumbros Korlous, Hank Mendez, Phil Kanaby,
+Chris, Danny, Dave, Dan, Laura, Julia, Crystal, Shonna, Kim, Brandon, Ken,
+Joey, Joe, Shannon, Donny, Addy, Cliff, Mike, Wayne, Rex, Chauncey, Josh,
+Jay, Splarka, Vivi, Tim, Matt, Matthew Sommer, Vincent, Megggan, Klair,
+Alex, Frank, John, William
 
-Robert Pelloni, Harry Korlous, Lumbros Korlous, Hank Mendez, Phil Kanaby, Chris, Danny, Dave, Dan, Laura, Julia, Crystal, Shonna, Kim, Brandon, Ken, Joey, Joe, Shannon, Donny, Addy, Cliff, Mike, Wayne, Rex, Chauncey, Josh, Jay, Splarka, Vivi, Tim, Matt, Matthew Sommer, Vincent, Megggan, Klair, Alex, Frank, William
+## Status
+
+Live-but-minimal: created August 2026, last updated September 2026 (the
+AdSense commit). Four files total — what you see is all there is.
