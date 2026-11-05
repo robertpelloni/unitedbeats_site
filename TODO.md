@@ -1,6 +1,8 @@
 # UnitedBeats Task Backlog (TODO)
 
 ## Active / Immediate
+- [x] Consolidate multi-category controls into unified Operations Hub.
+- [x] Implement persistent System Tray menu with server and playback actions.
 - [x] Configure `.github/workflows/deploy.yml` for automated push-to-deploy to Hetzner.
 - [x] Document repository secrets (`HETZNER_HOST`, `HETZNER_SSH_KEY`, `HETZNER_USER`, `HETZNER_PORT`) in `DEPLOY.md`.
 - [x] Validate AdSense tag presence across live domains (`unitedbeats.org`, `unitedbeats.net`, `unitedbeats.site`).

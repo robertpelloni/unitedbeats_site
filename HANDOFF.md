@@ -10,5 +10,5 @@
 - `.github/workflows/deploy.yml`: GitHub Actions pipeline for Hetzner deployment.
 - `index.html`: Main single-page application with canvas visuals, audio stream, and Operations Hub.
 - `deploy.sh`: Shell deployment script for manual execution.
-- `VERSION.md`: Global version identifier (`1.1.0`).
+- `VERSION.md`: Global version identifier (`1.2.0`).
 - `DEPLOY.md`: Deployment reference and secrets configuration guide.
