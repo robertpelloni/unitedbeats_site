@@ -9,10 +9,10 @@ NGINX_ENABLED="/etc/nginx/sites-enabled/unitedbeats"
 
 echo "=== Deploying UnitedBeats ==="
 
-# Upload files
+# Upload files (both single-page app and verified Google AdSense ads.txt)
 echo "Uploading files..."
 ssh $SERVER "mkdir -p $REMOTE_DIR"
-scp index.html $SERVER:$REMOTE_DIR/
+scp index.html ads.txt $SERVER:$REMOTE_DIR/
 
 # Set permissions
 ssh $SERVER "chown -R www-data:www-data $REMOTE_DIR && chmod -R 755 $REMOTE_DIR"
