@@ -48,7 +48,7 @@ Accessible via the **⚡ Tray** top navigation dropdown:
 ## Collective Soul Registry (Detroit)
 
 Featuring 63 collective souls of the movement:
-*Robert Pelloni, Harry Korlous, Lumbros Korlous, Hank Mendez, Phil Kanaby, Chris, Danny, Dave, Dan, Laura, Julia, Crystal, Shonna, Kim, Brandon, Ken, Joey, Joe, Shannon, Donny, Addy, Mark, Steve, Mike, Sarah, Alex, Rachel, Justin, Jessica, Tyler, Megan, Josh, Emily, Ryan, Amanda, Matt, Ashley, Kyle, Brittany, Jacob, Taylor, Nick, Hannah, Cody, Lauren, Zack, Kayla, Eric, Stephanie, Luke, Samantha, Anthony, Elizabeth, Austin, Victoria, Jordan, Morgan, Dylan, Chloe, Caleb, Natalie, Mason, Olivia.*
+*Robert Pelloni, Harry Korlous, Lumbros Korlous, Phil, Michael, Chris, Danny, Dave, Dan, Laura, Julia, Crystal, Shonna, Kim, Brandon, Ken, Joey, Joe, Shannon, Donny, Addy, Craig, Adam, Amanda, Sommer, T, Jen, Dale, Cliff, Christopher, Jude, Leah, Jennifer, James, Alex, Samson, Cory, John, Austin, Ana, Mireille, Niraj, Eugene, Nick, Bry, Sam, Charles, Jason, Hank, Matthew, Derek, Gregg, Adriana, Daphne, Tim, Frank, Megan, Liz, Wayne, Josh, Neil, Jack, Steve*
 
 ---
 
