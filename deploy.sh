@@ -2,7 +2,7 @@
 # Deploy UnitedBeats site to Hetzner
 # Domains: unitedbeats.org, unitedbeats.net, unitedbeats.site
 
-SERVER="root@robertpelloni.com"
+SERVER="hetzner"
 REMOTE_DIR="/var/www/unitedbeats"
 NGINX_AVAIL="/etc/nginx/sites-available/unitedbeats"
 NGINX_ENABLED="/etc/nginx/sites-enabled/unitedbeats"
