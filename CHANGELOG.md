@@ -2,6 +2,10 @@
 
 All notable changes to UnitedBeats are documented in this file. Version numbers follow Semantic Versioning and are tied to `VERSION.md`.
 
+## [1.3.0] - 2026-11-13
+### Changed
+- Page background is now the United Beats Corporation building photo from ~/Downloads (`bg-building.jpg`, optimized 1254x1254 JPEG), darkened 42% for legibility; canvas animation renders transparent over it (stars/nebula/supernovae overlay the building).
+
 ## [1.2.0] - 2026-11-04
 ### Added
 - Consolidated Operations Hub overlay in `index.html` featuring tabbed categorization: Physics & Visuals, Souls (63), Audio, Ecosystem, and Deploy telemetry.

@@ -24,7 +24,9 @@
         box-sizing: border-box;
       }
       body {
-        background: #000;
+        background:
+          linear-gradient(rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.42)),
+          url("bg-building.jpg") center / cover no-repeat fixed #000;
         font-family: "Inter", sans-serif;
         overflow: hidden;
       }
@@ -32,6 +34,7 @@
         position: fixed;
         top: 0;
         left: 0;
+        background: transparent;
       }
       .yt-container {
         position: fixed;
@@ -1440,9 +1443,8 @@
           statsEl.textContent = `${fps} FPS · ${names.length} souls · ${userSupernovae.length + (mainSupernova ? 1 : 0)} supernovae`;
         }
 
-        // Background
-        ctx.fillStyle = "#000";
-        ctx.fillRect(0, 0, W, H);
+        // Background (transparent: building photo shows through)
+        ctx.clearRect(0, 0, W, H);
 
         // Nebula
         for (let i = 0; i < 4; i++) {
