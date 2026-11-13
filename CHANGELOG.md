@@ -2,6 +2,12 @@
 
 All notable changes to UnitedBeats are documented in this file. Version numbers follow Semantic Versioning and are tied to `VERSION.md`.
 
+## [1.3.1] - 2026-11-13
+### Fixed
+- Corrected surname spelling Korlous -> Kourlos (Harry Kourlos, Lumbros Kourlos) in the souls list and README; no Korlous instances remain.
+### Added
+- Agathi added to the souls list (79 souls total; counts updated in subtitle, Souls tab, and Detroit Souls Registry).
+
 ## [1.3.0] - 2026-11-13
 ### Changed
 - Page background is now the United Beats Corporation building photo from ~/Downloads (`bg-building.jpg`, optimized 1254x1254 JPEG), darkened 42% for legibility; canvas animation renders transparent over it (stars/nebula/supernovae overlay the building).
