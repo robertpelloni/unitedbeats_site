@@ -253,10 +253,498 @@
         opacity: 0;
         animation: fadeIn 2s ease 13s forwards;
       }
+
+      /* --- OPERATIONS HUB & SYSTEM TRAY STYLES --- */
+      :root {
+        --ub-gold: #d4af37;
+        --ub-gold-glow: rgba(212, 175, 55, 0.4);
+        --ub-panel-bg: rgba(8, 8, 12, 0.88);
+        --ub-border: rgba(212, 175, 55, 0.25);
+        --ub-text-muted: #8e8e9f;
+      }
+
+      .top-nav-bar {
+        position: fixed;
+        top: 18px;
+        left: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        z-index: 1000;
+      }
+
+      .nav-btn {
+        background: rgba(15, 15, 22, 0.75);
+        border: 1px solid var(--ub-border);
+        border-radius: 8px;
+        color: #fff;
+        padding: 8px 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        backdrop-filter: blur(10px);
+        transition: all 0.2s ease;
+      }
+      .nav-btn:hover {
+        border-color: var(--ub-gold);
+        box-shadow: 0 0 14px var(--ub-gold-glow);
+        transform: translateY(-1px);
+      }
+      .nav-btn svg {
+        width: 16px;
+        height: 16px;
+        fill: var(--ub-gold);
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(0, 0, 0, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 6px 12px;
+        font-size: 11px;
+        letter-spacing: 1px;
+        color: #aaa;
+        backdrop-filter: blur(8px);
+      }
+      .status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #00ff88;
+        box-shadow: 0 0 8px #00ff88;
+      }
+
+      /* System Tray Dropdown */
+      .tray-menu {
+        display: none;
+        position: absolute;
+        top: 50px;
+        left: 0;
+        width: 250px;
+        background: var(--ub-panel-bg);
+        border: 1px solid var(--ub-border);
+        border-radius: 10px;
+        padding: 10px;
+        backdrop-filter: blur(16px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px var(--ub-gold-glow);
+        z-index: 1001;
+      }
+      .tray-menu.active {
+        display: block;
+      }
+      .tray-title {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--ub-gold);
+        margin-bottom: 8px;
+        padding-bottom: 4px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .tray-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 7px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        color: #ccc;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .tray-item:hover {
+        background: rgba(212, 175, 55, 0.15);
+        color: #fff;
+      }
+      .tray-badge {
+        font-size: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: var(--ub-gold);
+      }
+      .tray-item.danger {
+        color: #ff6b6b;
+      }
+      .tray-item.danger:hover {
+        background: rgba(255, 80, 80, 0.15);
+      }
+
+      /* Consolidated Operations Hub Modal / Drawer */
+      .hub-panel {
+        display: none;
+        position: fixed;
+        top: 75px;
+        left: 20px;
+        width: 440px;
+        max-height: calc(100vh - 110px);
+        background: var(--ub-panel-bg);
+        border: 1px solid var(--ub-border);
+        border-radius: 12px;
+        backdrop-filter: blur(20px);
+        z-index: 999;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .hub-panel.active {
+        display: flex;
+      }
+      .hub-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--ub-border);
+        background: rgba(18, 18, 26, 0.5);
+      }
+      .hub-heading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--ub-gold);
+        letter-spacing: 0.5px;
+      }
+      .hub-close {
+        background: none;
+        border: none;
+        color: var(--ub-text-muted);
+        font-size: 18px;
+        cursor: pointer;
+        line-height: 1;
+      }
+      .hub-close:hover {
+        color: #fff;
+      }
+
+      .hub-tabs {
+        display: flex;
+        background: rgba(0, 0, 0, 0.4);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        overflow-x: auto;
+      }
+      .hub-tab-btn {
+        flex: 1;
+        background: none;
+        border: none;
+        padding: 10px 8px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.8px;
+        color: var(--ub-text-muted);
+        text-transform: uppercase;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+      .hub-tab-btn.active {
+        color: var(--ub-gold);
+        border-bottom-color: var(--ub-gold);
+        background: rgba(212, 175, 55, 0.08);
+      }
+
+      .hub-content {
+        padding: 16px;
+        overflow-y: auto;
+        max-height: calc(100vh - 220px);
+      }
+      .hub-section {
+        display: none;
+      }
+      .hub-section.active {
+        display: block;
+      }
+
+      .hub-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 12px;
+      }
+      .hub-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        font-size: 12px;
+      }
+      .hub-row:last-child {
+        margin-bottom: 0;
+      }
+      .hub-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #ccc;
+      }
+
+      .tooltip-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: rgba(212, 175, 55, 0.2);
+        color: var(--ub-gold);
+        font-size: 9px;
+        cursor: help;
+        position: relative;
+      }
+      .tooltip-icon:hover::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #111;
+        border: 1px solid var(--ub-border);
+        color: #ddd;
+        padding: 5px 8px;
+        border-radius: 4px;
+        font-size: 10px;
+        white-space: nowrap;
+        z-index: 1002;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+      }
+
+      .hub-control-btn {
+        background: rgba(212, 175, 55, 0.15);
+        border: 1px solid var(--ub-border);
+        color: var(--ub-gold);
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .hub-control-btn:hover {
+        background: var(--ub-gold);
+        color: #000;
+      }
+      .hub-control-btn.active-state {
+        background: rgba(0, 255, 136, 0.2);
+        border-color: #00ff88;
+        color: #00ff88;
+      }
+
+      .soul-search-box {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--ub-border);
+        border-radius: 6px;
+        padding: 8px 10px;
+        font-size: 12px;
+        color: #fff;
+        margin-bottom: 10px;
+        outline: none;
+      }
+      .soul-search-box:focus {
+        border-color: var(--ub-gold);
+      }
+      .souls-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+      .soul-tag {
+        background: rgba(255, 255, 255, 0.04);
+        padding: 5px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        color: #aaa;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+      }
+      .soul-tag:hover {
+        background: rgba(212, 175, 55, 0.15);
+        color: #fff;
+      }
+      .soul-tag.highlight {
+        border-left: 2px solid var(--ub-gold);
+        color: var(--ub-gold);
+      }
+
     </style>
   </head>
   <body>
     <canvas id="canvas"></canvas>
+
+    <!-- Top Navigation Bar & System Tray Icon -->
+    <header class="top-nav-bar" id="topNav">
+      <button class="nav-btn" id="hubToggleBtn" title="Toggle UnitedBeats Operations Hub [Tab]">
+        <svg viewBox="0 0 24 24"><path d="M4 4h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 10h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 16h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4z"/></svg>
+        <span>Operations Hub</span>
+      </button>
+
+      <div style="position: relative;">
+        <button class="nav-btn" id="trayMenuBtn" title="System Tray & Quick Controls">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+          <span>Tray</span>
+        </button>
+        <div class="tray-menu" id="trayMenu">
+          <div class="tray-title">System Tray & Runtime</div>
+          <div class="tray-item" id="trayTriggerNova">
+            <span>Trigger Supernova Burst</span>
+            <span class="tray-badge">[Click / Space]</span>
+          </div>
+          <div class="tray-item" id="trayToggleHub">
+            <span>Toggle Consolidated Hub</span>
+            <span class="tray-badge">[Tab]</span>
+          </div>
+          <div class="tray-item" id="trayToggleAudio">
+            <span>Mute / Unmute Audio</span>
+            <span class="tray-badge">[M]</span>
+          </div>
+          <div class="tray-item" id="trayHostStatus">
+            <span>Hetzner Host Status</span>
+            <span class="tray-badge" style="color:#00ff88;">Active</span>
+          </div>
+          <div class="tray-item danger" id="trayQuitServer">
+            <span>Shutdown Local Server / Free Port</span>
+            <span class="tray-badge" style="color:#ff6b6b;">[Quit]</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        <span id="runtimeStatus">UB-DETROIT ONLINE</span>
+      </div>
+    </header>
+
+    <!-- Consolidated Single-Page Operations Hub -->
+    <aside class="hub-panel" id="hubPanel">
+      <div class="hub-header">
+        <div class="hub-heading">
+          <svg style="width:16px;height:16px;fill:var(--ub-gold);" viewBox="0 0 24 24"><path d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99z"/></svg>
+          <span>UNITEDBEATS OPERATIONS HUB</span>
+        </div>
+        <button class="hub-close" id="hubCloseBtn" title="Close Hub [Esc]">&times;</button>
+      </div>
+
+      <div class="hub-tabs">
+        <button class="hub-tab-btn active" data-tab="physics">Physics</button>
+        <button class="hub-tab-btn" data-tab="souls">Souls (76)</button>
+        <button class="hub-tab-btn" data-tab="audio">Audio</button>
+        <button class="hub-tab-btn" data-tab="ecosystem">Ecosystem</button>
+        <button class="hub-tab-btn" data-tab="deploy">Deploy</button>
+      </div>
+
+      <div class="hub-content">
+        <!-- Physics & Visuals Tab -->
+        <div class="hub-section active" id="tab-physics">
+          <div class="tray-title">Cosmic Physics Controls</div>
+          <div class="hub-card">
+            <div class="hub-row">
+              <span class="hub-label">
+                Gravity Wells
+                <span class="tooltip-icon" data-tooltip="Toggles particle pull toward mouse position">?</span>
+              </span>
+              <button class="hub-control-btn active-state" id="btnToggleGravity">Enabled</button>
+            </div>
+            <div class="hub-row">
+              <span class="hub-label">
+                Soul Filaments
+                <span class="tooltip-icon" data-tooltip="Draws connecting celestial filaments between settled souls">?</span>
+              </span>
+              <button class="hub-control-btn active-state" id="btnToggleFilaments">Enabled</button>
+            </div>
+            <div class="hub-row">
+              <span class="hub-label">Particle Density Target</span>
+              <span style="color:var(--ub-gold);font-weight:700;">500 Stars · 60 FPS Target</span>
+            </div>
+          </div>
+
+          <div class="hub-card">
+            <div class="hub-row">
+              <span class="hub-label">
+                Manual Supernova Trigger
+                <span class="tooltip-icon" data-tooltip="Spawns a massive cosmic explosion at canvas center">?</span>
+              </span>
+              <button class="hub-control-btn" id="btnTriggerNova">Burst Nova</button>
+            </div>
+            <div class="hub-row">
+              <span class="hub-label">
+                Clear Secondary Supernovae
+                <span class="tooltip-icon" data-tooltip="Clears user-created mini-explosions">?</span>
+              </span>
+              <button class="hub-control-btn" id="btnClearNovas">Clear Novas</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 63 Souls Tab -->
+        <div class="hub-section" id="tab-souls">
+          <div class="tray-title">Detroit Souls Registry (63)</div>
+          <input type="text" class="soul-search-box" id="soulSearchInput" placeholder="Filter soul names or pioneers..." />
+          <div class="souls-grid" id="soulsGrid"></div>
+        </div>
+
+        <!-- Audio Tab -->
+        <div class="hub-section" id="tab-audio">
+          <div class="tray-title">Deep Space Audio Stream</div>
+          <div class="hub-card">
+            <div class="hub-row">
+              <span class="hub-label">Stream Source</span>
+              <span style="color:#aaa;">YouTube Ambient Station</span>
+            </div>
+            <div class="hub-row">
+              <span class="hub-label">Playlist Code</span>
+              <span style="font-family:monospace;color:var(--ub-gold);">bGdAvJPZcgg</span>
+            </div>
+            <div class="hub-row">
+              <span class="hub-label">Status</span>
+              <span id="audioHubStatus" style="color:#ff6b6b;">Muted (Click to play)</span>
+            </div>
+            <div class="hub-row" style="margin-top:10px;">
+              <button class="hub-control-btn" id="hubAudioToggleBtn" style="width:100%;">Toggle Audio Stream [M]</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ecosystem Tab -->
+        <div class="hub-section" id="tab-ecosystem">
+          <div class="tray-title">UnitedBeats Federation & Nodes</div>
+          <div class="hub-card">
+            <div class="hub-row"><a href="https://unitedbeats.org" target="_blank" style="color:var(--ub-gold);text-decoration:none;">unitedbeats.org</a><span style="color:#00ff88;">Global Edge</span></div>
+            <div class="hub-row"><a href="https://unitedbeats.net" target="_blank" style="color:var(--ub-gold);text-decoration:none;">unitedbeats.net</a><span style="color:#00ff88;">Cluster Mirror</span></div>
+            <div class="hub-row"><a href="https://unitedbeats.site" target="_blank" style="color:var(--ub-gold);text-decoration:none;">unitedbeats.site</a><span style="color:#00ff88;">Cluster Mirror</span></div>
+            <div class="hub-row"><a href="https://robertpelloni.com" target="_blank" style="color:#aaa;text-decoration:none;">robertpelloni.com</a><span>Portfolio</span></div>
+            <div class="hub-row"><a href="https://hypernexus.site" target="_blank" style="color:#aaa;text-decoration:none;">hypernexus.site</a><span>Nexus Hub</span></div>
+            <div class="hub-row"><a href="https://bobsgame.com" target="_blank" style="color:#aaa;text-decoration:none;">bobsgame.com</a><span>Flagship Game</span></div>
+            <div class="hub-row"><a href="https://www.youtube.com/@ResurrectingBeats" target="_blank" style="color:#ff6b6b;text-decoration:none;">@ResurrectingBeats</a><span>Audio Channel</span></div>
+          </div>
+        </div>
+
+        <!-- Deploy Tab -->
+        <div class="hub-section" id="tab-deploy">
+          <div class="tray-title">Deployment & Infrastructure</div>
+          <div class="hub-card">
+            <div class="hub-row"><span class="hub-label">Target Server</span><span>Hetzner Dedicated</span></div>
+            <div class="hub-row"><span class="hub-label">Web Root</span><span style="font-family:monospace;">/var/www/unitedbeats</span></div>
+            <div class="hub-row"><span class="hub-label">CI/CD Pipeline</span><span style="color:#00ff88;">GitHub Actions</span></div>
+            <div class="hub-row"><span class="hub-label">Active Version</span><span style="color:var(--ub-gold);font-weight:700;">v1.2.0</span></div>
+            <div class="hub-row"><span class="hub-label">AdSense Record</span><span style="color:#00ff88;">Verified</span></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
 
     <!-- YouTube Background Audio -->
     <div class="yt-container">
@@ -280,7 +768,7 @@
     <div class="hero">
       <h1 class="logo">UnitedBeats</h1>
       <p class="tagline">EVERYBODY WINS</p>
-      <p class="subtitle">76 souls · 1 universe</p>
+      <p class="subtitle">78 souls · 1 universe</p>
     </div>
 
     <div class="click-hint">CLICK ANYWHERE TO CREATE SUPERNOVAE</div>
@@ -307,6 +795,11 @@
       const canvas = document.getElementById("canvas");
       const ctx = canvas.getContext("2d");
       let W, H, cx, cy, mouseX, mouseY;
+
+      // Physics and Filament engine toggles (bound to Operations Hub)
+      let mouseGravityEnabled = true;
+      let filamentsEnabled = true;
+      let activeSoulHighlight = null;
 
       function resize() {
         W = canvas.width = window.innerWidth;
@@ -1014,41 +1507,45 @@
           return sn.alive;
         });
 
-        // Draw connecting lines between settled names
+        // Draw connecting lines between settled names (Soul Filaments)
         if (mainSupernova && mainSupernova.phase === 2) {
           const settled = mainSupernova.names.filter((n) => n.settled);
-          settled.forEach((n1, i) => {
-            settled.slice(i + 1).forEach((n2) => {
-              const dx = n1.x - n2.x;
-              const dy = n1.y - n2.y;
+          if (filamentsEnabled) {
+            settled.forEach((n1, i) => {
+              settled.slice(i + 1).forEach((n2) => {
+                const dx = n1.x - n2.x;
+                const dy = n1.y - n2.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 200) {
+                  const o = (1 - dist / 200) * 0.1;
+                  ctx.beginPath();
+                  ctx.moveTo(n1.x, n1.y);
+                  ctx.lineTo(n2.x, n2.y);
+                  ctx.strokeStyle = `rgba(255,200,100,${o})`;
+                  ctx.lineWidth = 0.5;
+                  ctx.stroke();
+                }
+              });
+            });
+          }
+
+          // Mouse gravity effect (Gravity Wells)
+          if (mouseGravityEnabled) {
+            settled.forEach((p) => {
+              const dx = mouseX - p.x;
+              const dy = mouseY - p.y;
               const dist = Math.sqrt(dx * dx + dy * dy);
-              if (dist < 200) {
-                const o = (1 - dist / 200) * 0.1;
+              if (dist < 300) {
+                const force = (1 - dist / 300) * 0.5;
                 ctx.beginPath();
-                ctx.moveTo(n1.x, n1.y);
-                ctx.lineTo(n2.x, n2.y);
-                ctx.strokeStyle = `rgba(255,200,100,${o})`;
-                ctx.lineWidth = 0.5;
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(p.x + dx * force * 0.1, p.y + dy * force * 0.1);
+                ctx.strokeStyle = `rgba(255,215,0,${force * 0.3})`;
+                ctx.lineWidth = 1;
                 ctx.stroke();
               }
             });
-          });
-
-          // Mouse gravity effect
-          settled.forEach((p) => {
-            const dx = mouseX - p.x;
-            const dy = mouseY - p.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < 300) {
-              const force = (1 - dist / 300) * 0.5;
-              ctx.beginPath();
-              ctx.moveTo(p.x, p.y);
-              ctx.lineTo(p.x + dx * force * 0.1, p.y + dy * force * 0.1);
-              ctx.strokeStyle = `rgba(255,215,0,${force * 0.3})`;
-              ctx.lineWidth = 1;
-              ctx.stroke();
-            }
-          });
+          }
         }
 
         requestAnimationFrame(animate);
@@ -1176,6 +1673,179 @@
       appleIcon.rel = "apple-touch-icon";
       appleIcon.href = generateFavicon();
       document.head.appendChild(appleIcon);
+
+      // --- OPERATIONS HUB & SYSTEM TRAY ENGINE ---
+
+      const hubPanel = document.getElementById("hubPanel");
+      const hubToggleBtn = document.getElementById("hubToggleBtn");
+      const hubCloseBtn = document.getElementById("hubCloseBtn");
+      const trayMenuBtn = document.getElementById("trayMenuBtn");
+      const trayMenu = document.getElementById("trayMenu");
+      const soulsGrid = document.getElementById("soulsGrid");
+      const soulSearchInput = document.getElementById("soulSearchInput");
+      const btnToggleGravity = document.getElementById("btnToggleGravity");
+      const btnToggleFilaments = document.getElementById("btnToggleFilaments");
+      const btnTriggerNova = document.getElementById("btnTriggerNova");
+      const btnClearNovas = document.getElementById("btnClearNovas");
+      const hubAudioToggleBtn = document.getElementById("hubAudioToggleBtn");
+      const audioHubStatus = document.getElementById("audioHubStatus");
+
+      // Populate Souls Grid
+      function populateSouls(filterText = "") {
+        if (!soulsGrid) return;
+        soulsGrid.innerHTML = "";
+        names
+          .filter(name => name.toLowerCase().includes(filterText.toLowerCase()))
+          .forEach(name => {
+            const tag = document.createElement("div");
+            tag.className = "soul-tag" + (activeSoulHighlight === name ? " highlight" : "");
+            tag.textContent = name;
+            tag.addEventListener("click", () => {
+              activeSoulHighlight = (activeSoulHighlight === name) ? null : name;
+              populateSouls(soulSearchInput.value);
+            });
+            soulsGrid.appendChild(tag);
+          });
+      }
+      populateSouls();
+
+      if (soulSearchInput) {
+        soulSearchInput.addEventListener("input", (e) => {
+          populateSouls(e.target.value);
+        });
+      }
+
+      // Hub Navigation Tabs
+      const hubTabBtns = document.querySelectorAll(".hub-tab-btn");
+      const hubSections = document.querySelectorAll(".hub-section");
+      hubTabBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          hubTabBtns.forEach(b => b.classList.remove("active"));
+          hubSections.forEach(s => s.classList.remove("active"));
+          btn.classList.add("active");
+          const tabId = "tab-" + btn.getAttribute("data-tab");
+          const targetSection = document.getElementById(tabId);
+          if (targetSection) targetSection.classList.add("active");
+        });
+      });
+
+      // Toggle Hub
+      function toggleHub() {
+        if (!hubPanel) return;
+        const isActive = hubPanel.classList.toggle("active");
+        if (trayMenu) trayMenu.classList.remove("active");
+      }
+      if (hubToggleBtn) hubToggleBtn.addEventListener("click", toggleHub);
+      if (hubCloseBtn) hubCloseBtn.addEventListener("click", () => hubPanel.classList.remove("active"));
+
+      // System Tray Menu Toggle
+      if (trayMenuBtn) {
+        trayMenuBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          trayMenu.classList.toggle("active");
+        });
+      }
+      document.addEventListener("click", (e) => {
+        if (trayMenu && !trayMenu.contains(e.target) && e.target !== trayMenuBtn) {
+          trayMenu.classList.remove("active");
+        }
+      });
+
+      // Tray Quick Actions
+      const trayTriggerNova = document.getElementById("trayTriggerNova");
+      if (trayTriggerNova) {
+        trayTriggerNova.addEventListener("click", () => {
+          userSupernovae.push(new Supernova(cx, cy, false));
+          trayMenu.classList.remove("active");
+        });
+      }
+      const trayToggleHub = document.getElementById("trayToggleHub");
+      if (trayToggleHub) {
+        trayToggleHub.addEventListener("click", () => {
+          toggleHub();
+          trayMenu.classList.remove("active");
+        });
+      }
+      const trayToggleAudio = document.getElementById("trayToggleAudio");
+      if (trayToggleAudio) {
+        trayToggleAudio.addEventListener("click", () => {
+          if (soundBtn) soundBtn.click();
+          trayMenu.classList.remove("active");
+        });
+      }
+      const trayQuitServer = document.getElementById("trayQuitServer");
+      if (trayQuitServer) {
+        trayQuitServer.addEventListener("click", () => {
+          const banner = document.getElementById("runtimeStatus");
+          if (banner) {
+            banner.textContent = "SERVER SHUTDOWN SIMULATED";
+            banner.style.color = "#ff6b6b";
+          }
+          trayMenu.classList.remove("active");
+        });
+      }
+
+      // Physics Controls
+      if (btnToggleGravity) {
+        btnToggleGravity.addEventListener("click", () => {
+          mouseGravityEnabled = !mouseGravityEnabled;
+          btnToggleGravity.textContent = mouseGravityEnabled ? "Enabled" : "Disabled";
+          btnToggleGravity.classList.toggle("active-state", mouseGravityEnabled);
+        });
+      }
+      if (btnToggleFilaments) {
+        btnToggleFilaments.addEventListener("click", () => {
+          filamentsEnabled = !filamentsEnabled;
+          btnToggleFilaments.textContent = filamentsEnabled ? "Enabled" : "Disabled";
+          btnToggleFilaments.classList.toggle("active-state", filamentsEnabled);
+        });
+      }
+      if (btnTriggerNova) {
+        btnTriggerNova.addEventListener("click", () => {
+          userSupernovae.push(new Supernova(cx, cy, false));
+        });
+      }
+      if (btnClearNovas) {
+        btnClearNovas.addEventListener("click", () => {
+          userSupernovae = [];
+        });
+      }
+
+      // Synchronize Audio Hub Status
+      if (hubAudioToggleBtn && soundBtn) {
+        hubAudioToggleBtn.addEventListener("click", () => {
+          soundBtn.click();
+        });
+      }
+
+      // Update soundBtn listener to sync status text
+      const origSoundBtnClick = soundBtn ? soundBtn.onclick : null;
+      if (soundBtn) {
+        soundBtn.addEventListener("click", () => {
+          if (audioHubStatus) {
+            audioHubStatus.textContent = isMuted ? "Muted (Click to play)" : "Playing Ambient Stream";
+            audioHubStatus.style.color = isMuted ? "#ff6b6b" : "#00ff88";
+          }
+        });
+      }
+
+      // Keyboard Shortcuts
+      document.addEventListener("keydown", (e) => {
+        if (e.target.tagName === "INPUT") return;
+        if (e.key === "Tab") {
+          e.preventDefault();
+          toggleHub();
+        } else if (e.key === "Escape") {
+          if (hubPanel) hubPanel.classList.remove("active");
+          if (trayMenu) trayMenu.classList.remove("active");
+        } else if (e.key === "m" || e.key === "M") {
+          if (soundBtn) soundBtn.click();
+        } else if (e.key === " ") {
+          e.preventDefault();
+          userSupernovae.push(new Supernova(cx, cy, false));
+        }
+      });
+
     </script>
   </body>
 </html>
