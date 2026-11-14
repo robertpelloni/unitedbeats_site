@@ -1,0 +1,1 @@
+<?php get_header(); if(have_posts()): while(have_posts()): the_post(); ?><article class="ub-card"><h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2><div class="ub-meta"><?php echo get_the_date(); ?></div><?php the_excerpt(); ?></article><?php endwhile; endif; get_footer(); ?>

@@ -37,3 +37,7 @@
 - `MEMORY.md`: Persistent engineering decisions and architectural notes.
 - `IDEAS.md`: Creative expansion proposals.
 - `CHANGELOG.md`: Detailed version history.
+
+
+## 2026-11-14 WordPress migration
+- WP live at unitedbeats.org (200), theme UnitedBeats Legacy preserves homepage; posts at #posts below 100vh spacer; 10 project pages all 200; admin creds only on server /root/.unitedbeats_wp_creds (600). Repo moved to UnitedBeatsLLC org. CDP menu-list confirmation asked from Bobbi/Gemini/ChatGPT (pending, out-of-usage until Sat 18:38).

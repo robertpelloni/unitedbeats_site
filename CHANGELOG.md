@@ -2,6 +2,10 @@
 
 All notable changes to UnitedBeats are documented in this file. Version numbers follow Semantic Versioning and are tied to `VERSION.md`.
 
+## [1.4.0] - 2026-11-14
+### Added
+- WordPress installed on Hetzner (/var/www/unitedbeats): homepage preserved exactly (legacy theme from index.html), posts below the fold, project pages + Primary menu for HyperNexus, TormentNexus, FWBer, Real Estate CRM, Bobs Game, BobMani/HymnMania, Marketing Agent, BobCoin, HyperNexus GTM, About. Theme source in wordpress-theme/unitedbeats. Pre-WP backup on server: /root/backups/unitedbeats-pre-wp-20261114.tgz.
+
 ## [1.3.1] - 2026-11-13
 ### Fixed
 - Corrected surname spelling Korlous -> Kourlos (Harry Kourlos, Lumbros Kourlos) in the souls list and README; no Korlous instances remain.

@@ -1,0 +1,208 @@
+<canvas id="canvas"></canvas>
+
+    <!-- Top Navigation Bar & System Tray Icon -->
+    <header class="top-nav-bar" id="topNav">
+      <button class="nav-btn" id="hubToggleBtn" title="Toggle UnitedBeats Operations Hub [Tab]">
+        <svg viewBox="0 0 24 24"><path d="M4 4h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 10h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 16h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4z"/></svg>
+        <span>Operations Hub</span>
+      </button>
+
+      <div style="position: relative;">
+        <button class="nav-btn" id="trayMenuBtn" title="System Tray & Quick Controls">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+          <span>Tray</span>
+        </button>
+        <div class="tray-menu" id="trayMenu">
+          <div class="tray-title">System Tray & Runtime</div>
+          <div class="tray-item" id="trayTriggerNova">
+            <span>Trigger Supernova Burst</span>
+            <span class="tray-badge">[Click / Space]</span>
+          </div>
+          <div class="tray-item" id="trayToggleHub">
+            <span>Toggle Consolidated Hub</span>
+            <span class="tray-badge">[Tab]</span>
+          </div>
+          <div class="tray-item" id="trayToggleAudio">
+            <span>Mute / Unmute Audio</span>
+            <span class="tray-badge">[M]</span>
+          </div>
+          <div class="tray-item" id="trayHostStatus">
+            <span>Hetzner Host Status</span>
+            <span class="tray-badge" style="color:#00ff88;">Active</span>
+          </div>
+          <div class="tray-item danger" id="trayQuitServer">
+            <span>Shutdown Local Server / Free Port</span>
+            <span class="tray-badge" style="color:#ff6b6b;">[Quit]</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        <span id="runtimeStatus">UB-DETROIT ONLINE</span>
+      </div>
+    </header>
+
+    <!-- Consolidated Single-Page Operations Hub -->
+    <aside class="hub-panel" id="hubPanel">
+      <div class="hub-header">
+        <div class="hub-heading">
+          <svg style="width:16px;height:16px;fill:var(--ub-gold);" viewBox="0 0 24 24"><path d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99z"/></svg>
+          <span>UNITEDBEATS OPERATIONS HUB</span>
+        </div>
+        <button class="hub-close" id="hubCloseBtn" title="Close Hub [Esc]">&times;</button>
+      </div>
+
+      <div class="hub-tabs">
+        <button class="hub-tab-btn active" data-tab="physics">Physics</button>
+        <button class="hub-tab-btn" data-tab="souls">Souls (79)</button>
+        <button class="hub-tab-btn" data-tab="audio">Audio</button>
+        <button class="hub-tab-btn" data-tab="ecosystem">Ecosystem</button>
+        <button class="hub-tab-btn" data-tab="deploy">Deploy</button>
+      </div>
+
+      <div class="hub-content">
+        <!-- Physics & Visuals Tab -->
+        <div class="hub-section active" id="tab-physics">
+          <div class="tray-title">Cosmic Physics Controls</div>
+          <div class="hub-card">
+            <div class="hub-row">
+              <span class="hub-label">
+                Gravity Wells
+                <span class="tooltip-icon" data-tooltip="Toggles particle pull toward mouse position">?</span>
+              </span>
+              <button class="hub-control-btn active-state" id="btnToggleGravity">Enabled</button>
+            </div>
+            <div class="hub-row">
+              <span class="hub-label">
+                Soul Filaments
+                <span class="tooltip-icon" data-tooltip="Draws connecting celestial filaments between settled souls">?</span>
+              </span>
+              <button class="hub-control-btn active-state" id="btnToggleFilaments">Enabled</button>
+            </div>
+            <div class="hub-row">
+              <span class="hub-label">Particle Density Target</span>
+              <span style="color:var(--ub-gold);font-weight:700;">500 Stars · 60 FPS Target</span>
+            </div>
+          </div>
+
+          <div class="hub-card">
+            <div class="hub-row">
+              <span class="hub-label">
+                Manual Supernova Trigger
+                <span class="tooltip-icon" data-tooltip="Spawns a massive cosmic explosion at canvas center">?</span>
+              </span>
+              <button class="hub-control-btn" id="btnTriggerNova">Burst Nova</button>
+            </div>
+            <div class="hub-row">
+              <span class="hub-label">
+                Clear Secondary Supernovae
+                <span class="tooltip-icon" data-tooltip="Clears user-created mini-explosions">?</span>
+              </span>
+              <button class="hub-control-btn" id="btnClearNovas">Clear Novas</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 79 Souls Tab -->
+        <div class="hub-section" id="tab-souls">
+          <div class="tray-title">Detroit Souls Registry (79)</div>
+          <input type="text" class="soul-search-box" id="soulSearchInput" placeholder="Filter soul names or pioneers..." />
+          <div class="souls-grid" id="soulsGrid"></div>
+        </div>
+
+        <!-- Audio Tab -->
+        <div class="hub-section" id="tab-audio">
+          <div class="tray-title">Deep Space Audio Stream</div>
+          <div class="hub-card">
+            <div class="hub-row">
+              <span class="hub-label">Stream Source</span>
+              <span style="color:#aaa;">YouTube Ambient Station</span>
+            </div>
+            <div class="hub-row">
+              <span class="hub-label">Playlist Code</span>
+              <span style="font-family:monospace;color:var(--ub-gold);">bGdAvJPZcgg</span>
+            </div>
+            <div class="hub-row">
+              <span class="hub-label">Status</span>
+              <span id="audioHubStatus" style="color:#ff6b6b;">Muted (Click to play)</span>
+            </div>
+            <div class="hub-row" style="margin-top:10px;">
+              <button class="hub-control-btn" id="hubAudioToggleBtn" style="width:100%;">Toggle Audio Stream [M]</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ecosystem Tab -->
+        <div class="hub-section" id="tab-ecosystem">
+          <div class="tray-title">UnitedBeats Federation & Nodes</div>
+          <div class="hub-card">
+            <div class="hub-row"><a href="https://unitedbeats.org" target="_blank" style="color:var(--ub-gold);text-decoration:none;">unitedbeats.org</a><span style="color:#00ff88;">Global Edge</span></div>
+            <div class="hub-row"><a href="https://unitedbeats.net" target="_blank" style="color:var(--ub-gold);text-decoration:none;">unitedbeats.net</a><span style="color:#00ff88;">Cluster Mirror</span></div>
+            <div class="hub-row"><a href="https://unitedbeats.site" target="_blank" style="color:var(--ub-gold);text-decoration:none;">unitedbeats.site</a><span style="color:#00ff88;">Cluster Mirror</span></div>
+            <div class="hub-row"><a href="https://robertpelloni.com" target="_blank" style="color:#aaa;text-decoration:none;">robertpelloni.com</a><span>Portfolio</span></div>
+            <div class="hub-row"><a href="https://hypernexus.site" target="_blank" style="color:#aaa;text-decoration:none;">hypernexus.site</a><span>Nexus Hub</span></div>
+            <div class="hub-row"><a href="https://bobsgame.com" target="_blank" style="color:#aaa;text-decoration:none;">bobsgame.com</a><span>Flagship Game</span></div>
+            <div class="hub-row"><a href="https://www.youtube.com/@ResurrectingBeats" target="_blank" style="color:#ff6b6b;text-decoration:none;">@ResurrectingBeats</a><span>Audio Channel</span></div>
+          </div>
+        </div>
+
+        <!-- Deploy Tab -->
+        <div class="hub-section" id="tab-deploy">
+          <div class="tray-title">Deployment & Infrastructure</div>
+          <div class="hub-card">
+            <div class="hub-row"><span class="hub-label">Target Server</span><span>Hetzner Dedicated</span></div>
+            <div class="hub-row"><span class="hub-label">Web Root</span><span style="font-family:monospace;">/var/www/unitedbeats</span></div>
+            <div class="hub-row"><span class="hub-label">CI/CD Pipeline</span><span style="color:#00ff88;">GitHub Actions</span></div>
+            <div class="hub-row"><span class="hub-label">Active Version</span><span style="color:var(--ub-gold);font-weight:700;">v1.2.0</span></div>
+            <div class="hub-row"><span class="hub-label">AdSense Record</span><span style="color:#00ff88;">Verified</span></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+
+    <!-- YouTube Background Audio -->
+    <div class="yt-container">
+      <iframe
+        id="ytPlayer"
+        src="https://www.youtube.com/embed/bGdAvJPZcgg?autoplay=1&loop=1&playlist=bGdAvJPZcgg&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1"
+        allow="autoplay; encrypted-media"
+        frameborder="0"
+      ></iframe>
+    </div>
+
+    <!-- Sound Toggle -->
+    <div class="sound-btn" id="soundBtn" title="Toggle Sound">
+      <svg id="soundIcon" viewBox="0 0 24 24">
+        <path
+          d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"
+        />
+      </svg>
+    </div>
+
+    <div class="hero">
+      <h1 class="logo">UnitedBeats</h1>
+      <p class="tagline">EVERYBODY WINS</p>
+      <p class="subtitle">79 souls · 1 universe</p>
+    </div>
+
+    <div class="click-hint">CLICK ANYWHERE TO CREATE SUPERNOVAE</div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="footer">
+      <a href="https://unitedbeats.org">unitedbeats.org</a>
+      <a href="https://robertpelloni.com">robertpelloni.com</a>
+      <a href="https://hypernexus.site">hypernexus.site</a>
+      <a href="https://bobsgame.com">bobsgame.com</a>
+      <a href="https://fwber.me">fwber.me</a>
+      <a href="https://www.youtube.com/@ok">youtube.com/@ok</a>
+      <a href="https://www.youtube.com/@ResurrectingBeats"
+        >youtube.com/@ResurrectingBeats</a
+      >
+    </div>
+
+    <div class="message-hint">
+      Please message me if you want your name changed or if I forgot you!
+    </div>

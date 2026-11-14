@@ -1,0 +1,1056 @@
+<script>
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      let W, H, cx, cy, mouseX, mouseY;
+
+      // Physics and Filament engine toggles (bound to Operations Hub)
+      let mouseGravityEnabled = true;
+      let filamentsEnabled = true;
+      let activeSoulHighlight = null;
+
+      function resize() {
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+        cx = W / 2;
+        cy = H / 2;
+        mouseX = cx;
+        mouseY = cy;
+      }
+      resize();
+      window.addEventListener("resize", resize);
+
+      // Track mouse position
+      document.addEventListener("mousemove", (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      });
+
+      const names = [
+        "Robert Pelloni",
+        "Harry Kourlos",
+        "Lumbros Kourlos",
+        "Agathi",
+        "Phil",
+        "Michael",
+        "Mike",
+        "Chris",
+        "Danny",
+        "Dave",
+        "Dan",
+        "Laura",
+        "Julia",
+        "Crystal",
+        "Shonna",
+        "Kim",
+        "Brandon",
+        "Ken",
+        "Joey",
+        "Joe",
+        "Shannon",
+        "Donny",
+        "Addy",
+        "Craig",
+        "Adam",
+        "Amanda",
+        "Sommer",
+        "Matthew Sommer",
+        "T",
+        "Jen",
+        "Dale",
+        "Cliff",
+        "Christopher",
+        "Jude",
+        "Leah",
+        "Jennifer",
+        "James",
+        "Alex",
+        "Samson",
+        "Cory",
+        "John",
+        "Austin",
+        "Ana",
+        "Mireille",
+        "Niraj",
+        "Eugene",
+        "Nick",
+        "Bry",
+        "Sam",
+        "Charles",
+        "Jason",
+        "Hank",
+        "Matthew",
+        "Matt",
+        "Derek",
+        "Gregg",
+        "Adriana",
+        "Daphne",
+        "Tim",
+        "Frank",
+        "Megan",
+        "Megggan",
+        "Liz",
+        "Wayne",
+        "Josh",
+        "Neil",
+        "Jack",
+        "Steve",
+        "Klair",
+        "Rex",
+        "Chauncey",
+        "Jay",
+        "Splarka",
+        "Vivi",
+        "Vincent",
+        "Andrew",
+        "William",
+        "Christine",
+        "Gavin",
+      ];
+
+      // Deep space background
+      const layers = [
+        { stars: [], speed: 0.05, size: 0.5, count: 200 },
+        { stars: [], speed: 0.1, size: 1, count: 150 },
+        { stars: [], speed: 0.2, size: 1.5, count: 100 },
+        { stars: [], speed: 0.3, size: 2, count: 50 },
+      ];
+
+      layers.forEach((layer) => {
+        for (let i = 0; i < layer.count; i++) {
+          layer.stars.push({
+            x: Math.random() * 3000 - 500,
+            y: Math.random() * 3000 - 500,
+            o: Math.random(),
+            tw: Math.random() * 6.28,
+            hue: Math.random() > 0.9 ? Math.random() * 60 + 20 : 0,
+          });
+        }
+      });
+
+      // Galaxy spiral particles
+      const galaxy = [];
+      for (let i = 0; i < 500; i++) {
+        const angle = Math.random() * 6.28 * 3;
+        const dist = 50 + Math.random() * 400;
+        galaxy.push({
+          angle,
+          dist,
+          speed: 0.0002 + Math.random() * 0.0005,
+          size: Math.random() * 2 + 0.5,
+          hue: Math.random() * 40 + 20,
+          o: Math.random() * 0.5 + 0.1,
+        });
+      }
+
+      // Supernova class - realistic version
+      class Supernova {
+        constructor(x, y, isMain = false) {
+          this.x = x;
+          this.y = y;
+          this.isMain = isMain;
+          this.time = 0;
+          this.phase = 0;
+          this.alive = true;
+          this.debris = [];
+          this.rings = [];
+          this.names = [];
+          this.filaments = [];
+          this.ejecta = [];
+          this.shells = [];
+
+          // Create filaments (long tendrils of gas)
+          for (let i = 0; i < (isMain ? 24 : 8); i++) {
+            const angle =
+              (i / (isMain ? 24 : 8)) * 6.28 + (Math.random() - 0.5) * 0.3;
+            const length = 100 + Math.random() * 300;
+            const points = [];
+            for (let j = 0; j < 20; j++) {
+              const t = j / 19;
+              points.push({
+                ox: Math.cos(angle) * length * t + (Math.random() - 0.5) * 30,
+                oy: Math.sin(angle) * length * t + (Math.random() - 0.5) * 30,
+                wobble: Math.random() * 6.28,
+              });
+            }
+            this.filaments.push({
+              angle,
+              length,
+              points,
+              width: 2 + Math.random() * 4,
+              hue: Math.random() > 0.5 ? 0 : 30, // red or orange
+              speed: 0.5 + Math.random() * 1.5,
+              opacity: 0.6 + Math.random() * 0.4,
+            });
+          }
+
+          // Create ejecta knots (bright clumps)
+          for (let i = 0; i < (isMain ? 60 : 15); i++) {
+            const angle = Math.random() * 6.28;
+            const speed = 0.5 + Math.random() * 2;
+            this.ejecta.push({
+              x,
+              y,
+              vx: Math.cos(angle) * speed,
+              vy: Math.sin(angle) * speed,
+              size: 3 + Math.random() * 8,
+              life: 1,
+              decay: 0.0005 + Math.random() * 0.001,
+              hue: Math.random() * 40, // red-orange-yellow
+              brightness: 50 + Math.random() * 50,
+            });
+          }
+
+          // Create expanding gas shells
+          for (let i = 0; i < (isMain ? 4 : 2); i++) {
+            this.shells.push({
+              radius: 0,
+              maxRadius: 200 + i * 150 + Math.random() * 100,
+              speed: 1.5 + i * 0.5,
+              opacity: 0.4 - i * 0.08,
+              delay: i * 0.3,
+              width: 20 + Math.random() * 30,
+              hue: i * 10, // each shell slightly different color
+            });
+          }
+
+          // Create debris
+          for (let i = 0; i < (isMain ? 300 : 80); i++) {
+            const angle = Math.random() * 6.28;
+            const speed = 0.5 + Math.random() * (isMain ? 8 : 4);
+            this.debris.push({
+              x,
+              y,
+              vx: Math.cos(angle) * speed,
+              vy: Math.sin(angle) * speed,
+              size: Math.random() * (isMain ? 3 : 1.5) + 0.3,
+              life: 1,
+              decay: 0.0008 + Math.random() * 0.003,
+              hue: Math.random() * 60 + 10,
+            });
+          }
+
+          // Shockwave rings
+          for (let i = 0; i < (isMain ? 6 : 2); i++) {
+            this.rings.push({
+              radius: 0,
+              speed: 3 + i * 2,
+              opacity: 0.5 - i * 0.06,
+              delay: i * 0.4,
+            });
+          }
+
+          // Assign names if main
+          if (isMain) {
+            this.names = names.map((name, i) => {
+              const angle =
+                (i / names.length) * 6.28 + (Math.random() - 0.5) * 0.5;
+              const speed = 1.5 + Math.random() * 3;
+              const colors = [
+                "#ffd700",
+                "#ff6b35",
+                "#ff1493",
+                "#8a2be2",
+                "#00bfff",
+                "#ff4500",
+                "#7cfc00",
+                "#ff69b4",
+                "#00ced1",
+                "#ffa500",
+                "#ff6ec7",
+                "#7fffd4",
+              ];
+              return {
+                name,
+                x,
+                y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                angle,
+                size: 0.7 + Math.random() * 0.7,
+                color: colors[i % colors.length],
+                opacity: 0,
+                delay: 0.3 + Math.random() * 2,
+                trail: [],
+                maxTrail: 10 + Math.floor(Math.random() * 20),
+                phase: Math.random() * 6.28,
+                wobble: 0.3 + Math.random() * 2,
+                finalOrbit: 80 + Math.random() * 300,
+                finalAngle: Math.random() * 6.28,
+                finalSpeed: 0.0003 + Math.random() * 0.003,
+                settled: false,
+              };
+            });
+          }
+        }
+
+        update(dt) {
+          this.time += dt;
+          if (this.time < 2) this.phase = 0;
+          else if (this.time < 5) this.phase = 1;
+          else this.phase = 2;
+
+          // Update debris
+          this.debris.forEach((d) => {
+            d.x += d.vx;
+            d.y += d.vy;
+            d.vx *= 0.997;
+            d.vy *= 0.997;
+            d.life -= d.decay;
+          });
+          this.debris = this.debris.filter((d) => d.life > 0);
+
+          // Update names
+          this.names.forEach((p) => {
+            if (this.time < p.delay) return;
+            const age = this.time - p.delay;
+
+            if (this.phase <= 1) {
+              const force = Math.min(1, age * 0.3);
+              p.x = this.x + p.vx * age * 100 * force;
+              p.y = this.y + p.vy * age * 100 * force;
+              p.opacity = Math.min(1, age * 0.3);
+            } else {
+              if (!p.settled) p.settled = true;
+              p.finalAngle += p.finalSpeed;
+              const wx = Math.sin(this.time * p.wobble + p.phase) * 40;
+              const wy = Math.cos(this.time * p.wobble * 0.7 + p.phase) * 40;
+              const tx = this.x + Math.cos(p.finalAngle) * p.finalOrbit + wx;
+              const ty = this.y + Math.sin(p.finalAngle) * p.finalOrbit + wy;
+              p.x += (tx - p.x) * 0.015;
+              p.y += (ty - p.y) * 0.015;
+              p.opacity = 0.6 + 0.4 * Math.sin(this.time * 2 + p.phase);
+            }
+
+            p.trail.push({ x: p.x, y: p.y });
+            if (p.trail.length > p.maxTrail) p.trail.shift();
+          });
+
+          if (this.phase === 2 && this.debris.length === 0 && !this.isMain) {
+            this.alive = this.names.length > 0;
+          }
+        }
+
+        draw() {
+          // Pre-explosion star
+          if (this.phase === 0) {
+            const pulse = 1 + Math.sin(this.time * 5) * 0.3 * (this.time / 2);
+            const r = (5 + this.time * 15) * pulse;
+            const glow = 10 + this.time * 40;
+            this.drawStar(this.x, this.y, r, glow);
+            return;
+          }
+
+          // Initial flash (bright white)
+          if (this.time > 2 && this.time < 2.8) {
+            const t = (this.time - 2) / 0.8;
+            const flash = Math.pow(1 - t, 3);
+            ctx.fillStyle = `rgba(255,255,255,${flash * 0.9})`;
+            ctx.fillRect(0, 0, W, H);
+            // Blue-white core flash
+            const core = ctx.createRadialGradient(
+              this.x,
+              this.y,
+              0,
+              this.x,
+              this.y,
+              300 * (1 + t * 2),
+            );
+            core.addColorStop(0, `rgba(200,220,255,${flash * 0.8})`);
+            core.addColorStop(0.3, `rgba(255,255,255,${flash * 0.5})`);
+            core.addColorStop(1, "transparent");
+            ctx.fillStyle = core;
+            ctx.fillRect(0, 0, W, H);
+          }
+
+          // Expanding gas shells
+          this.shells.forEach((shell) => {
+            const t = this.time - shell.delay;
+            if (t < 0) return;
+            shell.radius = Math.min(shell.maxRadius, t * 150 * shell.speed);
+            const progress = shell.radius / shell.maxRadius;
+            const o =
+              shell.opacity * (1 - progress) * (1 - Math.max(0, (t - 3) / 5));
+            if (o <= 0.01) return;
+
+            // Outer shell edge
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, shell.radius, 0, 6.28);
+            ctx.strokeStyle = `hsla(${shell.hue}, 80%, 60%, ${o})`;
+            ctx.lineWidth = shell.width * (1 - progress * 0.5);
+            ctx.stroke();
+
+            // Inner glow
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, shell.radius * 0.95, 0, 6.28);
+            ctx.strokeStyle = `hsla(${shell.hue + 10}, 90%, 70%, ${o * 0.5})`;
+            ctx.lineWidth = shell.width * 0.3;
+            ctx.stroke();
+          });
+
+          // Shockwave rings (thin bright lines)
+          this.rings.forEach((ring) => {
+            const t = this.time - ring.delay;
+            if (t < 0) return;
+            ring.radius = t * 200 * ring.speed;
+            const o = Math.max(0, ring.opacity * (1 - t * 0.06));
+            if (o <= 0) return;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, ring.radius, 0, 6.28);
+            ctx.strokeStyle = `rgba(255,220,150,${o})`;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+          });
+
+          // Filaments (tendrils of gas)
+          this.filaments.forEach((f) => {
+            const t = this.time - 2;
+            if (t < 0) return;
+            const progress = Math.min(1, (t * f.speed) / 5);
+            const o = f.opacity * (1 - progress * 0.3);
+            ctx.beginPath();
+            ctx.moveTo(this.x, this.y);
+            for (let i = 0; i < f.points.length; i++) {
+              const p = f.points[i];
+              const wobbleX =
+                Math.sin(this.time * 2 + p.wobble) * 10 * progress;
+              const wobbleY =
+                Math.cos(this.time * 2 + p.wobble) * 10 * progress;
+              const px = this.x + p.ox * progress + wobbleX;
+              const py = this.y + p.oy * progress + wobbleY;
+              ctx.lineTo(px, py);
+            }
+            ctx.strokeStyle = `hsla(${f.hue}, 90%, 55%, ${o * 0.4})`;
+            ctx.lineWidth = f.width * (1 - progress * 0.3);
+            ctx.lineCap = "round";
+            ctx.stroke();
+          });
+
+          // Ejecta knots
+          this.ejecta.forEach((e) => {
+            const t = this.time - 2;
+            if (t < 0) return;
+            e.x += e.vx;
+            e.y += e.vy;
+            e.vx *= 0.998;
+            e.vy *= 0.998;
+            e.life -= e.decay;
+            if (e.life <= 0) return;
+            // Hot core
+            ctx.beginPath();
+            ctx.arc(e.x, e.y, e.size * e.life, 0, 6.28);
+            ctx.fillStyle = `hsla(${e.hue}, 90%, ${e.brightness}%, ${e.life * 0.7})`;
+            ctx.fill();
+            // Glow
+            const glow = ctx.createRadialGradient(
+              e.x,
+              e.y,
+              0,
+              e.x,
+              e.y,
+              e.size * e.life * 4,
+            );
+            glow.addColorStop(0, `hsla(${e.hue}, 100%, 60%, ${e.life * 0.3})`);
+            glow.addColorStop(1, "transparent");
+            ctx.fillStyle = glow;
+            ctx.fillRect(
+              e.x - e.size * 4,
+              e.y - e.size * 4,
+              e.size * 8,
+              e.size * 8,
+            );
+          });
+
+          // Dust/debris
+          this.debris.forEach((d) => {
+            d.x += d.vx;
+            d.y += d.vy;
+            d.vx *= 0.997;
+            d.vy *= 0.997;
+            d.life -= d.decay;
+            if (d.life <= 0) return;
+            ctx.beginPath();
+            ctx.arc(d.x, d.y, d.size * d.life, 0, 6.28);
+            ctx.fillStyle = `hsla(${d.hue}, 80%, ${40 + d.life * 40}%, ${d.life * 0.6})`;
+            ctx.fill();
+          });
+
+          // Central remnant (fading neutron star)
+          if (this.phase >= 1) {
+            const age = this.time - 2;
+            const fade = Math.max(0, 1 - age / 8);
+            if (fade > 0) {
+              // Pulsar glow
+              const pulse = 1 + Math.sin(this.time * 10) * 0.2;
+              const r = 3 * fade * pulse;
+              const glow = ctx.createRadialGradient(
+                this.x,
+                this.y,
+                0,
+                this.x,
+                this.y,
+                r * 10,
+              );
+              glow.addColorStop(0, `rgba(180,200,255,${fade * 0.8})`);
+              glow.addColorStop(0.3, `rgba(100,150,255,${fade * 0.4})`);
+              glow.addColorStop(1, "transparent");
+              ctx.fillStyle = glow;
+              ctx.fillRect(this.x - r * 10, this.y - r * 10, r * 20, r * 20);
+              // Core
+              ctx.beginPath();
+              ctx.arc(this.x, this.y, r, 0, 6.28);
+              ctx.fillStyle = `rgba(200,220,255,${fade * 0.9})`;
+              ctx.fill();
+            }
+          }
+
+          // Names
+          this.names.forEach((p) => {
+            if (this.time < p.delay) return;
+            const age = this.time - p.delay;
+
+            if (this.phase <= 1) {
+              const force = Math.min(1, age * 0.2);
+              p.x = this.x + p.vx * age * 80 * force;
+              p.y = this.y + p.vy * age * 80 * force;
+              p.opacity = Math.min(1, age * 0.2);
+            } else {
+              if (!p.settled) p.settled = true;
+              p.finalAngle += p.finalSpeed;
+              const wx = Math.sin(this.time * p.wobble + p.phase) * 40;
+              const wy = Math.cos(this.time * p.wobble * 0.7 + p.phase) * 40;
+              const tx = this.x + Math.cos(p.finalAngle) * p.finalOrbit + wx;
+              const ty = this.y + Math.sin(p.finalAngle) * p.finalOrbit + wy;
+              p.x += (tx - p.x) * 0.015;
+              p.y += (ty - p.y) * 0.015;
+              p.opacity = 0.6 + 0.4 * Math.sin(this.time * 2 + p.phase);
+            }
+
+            // Trail
+            p.trail.push({ x: p.x, y: p.y });
+            if (p.trail.length > p.maxTrail) p.trail.shift();
+            if (p.trail.length > 1) {
+              ctx.beginPath();
+              ctx.moveTo(p.trail[0].x, p.trail[0].y);
+              for (let i = 1; i < p.trail.length; i++)
+                ctx.lineTo(p.trail[i].x, p.trail[i].y);
+              ctx.strokeStyle = p.color;
+              ctx.globalAlpha = p.opacity * 0.08;
+              ctx.lineWidth = p.size * 10;
+              ctx.lineCap = "round";
+              ctx.stroke();
+              ctx.globalAlpha = 1;
+            }
+
+            // Name
+            ctx.save();
+            ctx.globalAlpha = p.opacity;
+            ctx.font = `bold ${p.size * 18}px 'Inter', sans-serif`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.shadowColor = p.color;
+            ctx.shadowBlur = 25;
+            ctx.fillStyle = p.color;
+            ctx.fillText(p.name, p.x, p.y);
+            ctx.shadowBlur = 8;
+            ctx.fillStyle = "rgba(255,255,255,0.6)";
+            ctx.fillText(p.name, p.x, p.y);
+            ctx.restore();
+          });
+        }
+
+        drawStar(x, y, r, glow) {
+          // Multi-layered corona
+          const layers = [
+            {
+              r: 15,
+              stops: [
+                [0, "rgba(255,255,255,0.95)"],
+                [0.2, "rgba(255,240,200,0.7)"],
+                [0.5, "rgba(255,150,50,0.2)"],
+                [1, "transparent"],
+              ],
+            },
+            {
+              r: 8,
+              stops: [
+                [0, "rgba(255,255,255,1)"],
+                [0.3, "rgba(200,220,255,0.8)"],
+                [0.7, "rgba(100,150,255,0.3)"],
+                [1, "transparent"],
+              ],
+            },
+          ];
+          layers.forEach((l) => {
+            const g = ctx.createRadialGradient(x, y, 0, x, y, r * l.r + glow);
+            l.stops.forEach(([stop, color]) => g.addColorStop(stop, color));
+            ctx.fillStyle = g;
+            ctx.fillRect(x - r * l.r, y - r * l.r, r * l.r * 2, r * l.r * 2);
+          });
+
+          // Light spikes
+          ctx.save();
+          ctx.translate(x, y);
+          for (let i = 0; i < 12; i++) {
+            ctx.rotate(0.524);
+            const len = r * 6 + glow * 2 + Math.sin(this.time * 3 + i) * r * 2;
+            const g = ctx.createLinearGradient(0, 0, len, 0);
+            g.addColorStop(0, "rgba(255,240,200,0.7)");
+            g.addColorStop(0.3, "rgba(200,220,255,0.3)");
+            g.addColorStop(1, "transparent");
+            ctx.beginPath();
+            ctx.moveTo(0, -0.8);
+            ctx.quadraticCurveTo(len * 0.4, -2, len, 0);
+            ctx.quadraticCurveTo(len * 0.4, 2, 0, 0.8);
+            ctx.fillStyle = g;
+            ctx.fill();
+          }
+          ctx.restore();
+
+          // Hot core
+          const core = ctx.createRadialGradient(x, y, 0, x, y, r * 2);
+          core.addColorStop(0, "#fff");
+          core.addColorStop(0.2, "rgba(200,220,255,0.9)");
+          core.addColorStop(0.5, "rgba(255,240,200,0.5)");
+          core.addColorStop(1, "transparent");
+          ctx.beginPath();
+          ctx.arc(x, y, r * 2, 0, 6.28);
+          ctx.fillStyle = core;
+          ctx.fill();
+        }
+      }
+
+      // Main supernova
+      let mainSupernova = null;
+      let userSupernovae = [];
+      let time = 0;
+
+      // Click to create supernova
+      canvas.addEventListener("click", (e) => {
+        userSupernovae.push(new Supernova(e.clientX, e.clientY, false));
+      });
+
+      // Stats
+      const statsEl = document.getElementById("stats");
+      let fps = 0,
+        frameCount = 0,
+        lastFpsTime = 0;
+
+      function animate(timestamp) {
+        const dt = 0.016;
+        time += dt;
+
+        // FPS
+        frameCount++;
+        if (timestamp - lastFpsTime > 1000) {
+          fps = frameCount;
+          frameCount = 0;
+          lastFpsTime = timestamp;
+          statsEl.textContent = `${fps} FPS · ${names.length} souls · ${userSupernovae.length + (mainSupernova ? 1 : 0)} supernovae`;
+        }
+
+        // Background (transparent: building photo shows through)
+        ctx.clearRect(0, 0, W, H);
+
+        // Nebula
+        for (let i = 0; i < 4; i++) {
+          const nx = cx + Math.sin(time * 0.1 + i * 1.5) * 300;
+          const ny = cy + Math.cos(time * 0.1 + i * 1.5) * 200;
+          const neb = ctx.createRadialGradient(nx, ny, 0, nx, ny, 500);
+          const hue = (time * 15 + i * 90) % 360;
+          neb.addColorStop(0, `hsla(${hue}, 80%, 30%, 0.02)`);
+          neb.addColorStop(0.5, `hsla(${hue + 30}, 70%, 20%, 0.01)`);
+          neb.addColorStop(1, "transparent");
+          ctx.fillStyle = neb;
+          ctx.fillRect(0, 0, W, H);
+        }
+
+        // Parallax stars
+        const mx = (mouseX - cx) * 0.01;
+        const my = (mouseY - cy) * 0.01;
+        layers.forEach((layer, li) => {
+          layer.stars.forEach((s) => {
+            s.tw += 0.02;
+            const px = s.x + mx * layer.speed * 100;
+            const py = s.y + my * layer.speed * 100;
+            const o = s.o * (0.3 + 0.7 * Math.sin(s.tw));
+            if (s.hue > 0) {
+              ctx.fillStyle = `hsla(${s.hue}, 80%, 70%, ${o})`;
+            } else {
+              ctx.fillStyle = `rgba(255,255,255,${o})`;
+            }
+            ctx.beginPath();
+            ctx.arc(px, py, layer.size, 0, 6.28);
+            ctx.fill();
+          });
+        });
+
+        // Galaxy
+        galaxy.forEach((g) => {
+          g.angle += g.speed;
+          const gx =
+            cx + Math.cos(g.angle) * g.dist + Math.sin(time * 0.1) * 50;
+          const gy =
+            cy + Math.sin(g.angle) * g.dist * 0.4 + Math.cos(time * 0.1) * 30;
+          ctx.beginPath();
+          ctx.arc(gx, gy, g.size, 0, 6.28);
+          ctx.fillStyle = `hsla(${g.hue}, 60%, 60%, ${g.o * 0.3})`;
+          ctx.fill();
+        });
+
+        // Create main supernova after 1s
+        if (!mainSupernova && time > 1) {
+          mainSupernova = new Supernova(cx, cy, true);
+        }
+
+        // Update & draw supernovae
+        if (mainSupernova) {
+          mainSupernova.update(dt);
+          mainSupernova.draw();
+        }
+
+        userSupernovae = userSupernovae.filter((sn) => {
+          sn.update(dt);
+          sn.draw();
+          return sn.alive;
+        });
+
+        // Draw connecting lines between settled names (Soul Filaments)
+        if (mainSupernova && mainSupernova.phase === 2) {
+          const settled = mainSupernova.names.filter((n) => n.settled);
+          if (filamentsEnabled) {
+            settled.forEach((n1, i) => {
+              settled.slice(i + 1).forEach((n2) => {
+                const dx = n1.x - n2.x;
+                const dy = n1.y - n2.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 200) {
+                  const o = (1 - dist / 200) * 0.1;
+                  ctx.beginPath();
+                  ctx.moveTo(n1.x, n1.y);
+                  ctx.lineTo(n2.x, n2.y);
+                  ctx.strokeStyle = `rgba(255,200,100,${o})`;
+                  ctx.lineWidth = 0.5;
+                  ctx.stroke();
+                }
+              });
+            });
+          }
+
+          // Mouse gravity effect (Gravity Wells)
+          if (mouseGravityEnabled) {
+            settled.forEach((p) => {
+              const dx = mouseX - p.x;
+              const dy = mouseY - p.y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              if (dist < 300) {
+                const force = (1 - dist / 300) * 0.5;
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(p.x + dx * force * 0.1, p.y + dy * force * 0.1);
+                ctx.strokeStyle = `rgba(255,215,0,${force * 0.3})`;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+              }
+            });
+          }
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      animate(0);
+
+      // YouTube Sound Toggle
+      const ytPlayer = document.getElementById("ytPlayer");
+      const soundBtn = document.getElementById("soundBtn");
+      const soundIcon = document.getElementById("soundIcon");
+      // Set the icon by updating the path's `d` attribute rather than using
+      // innerHTML (avoids HTML parsing / injection entirely).
+      const soundPath = soundIcon.querySelector("path");
+      const SOUND_ON_D =
+        "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z";
+      const SOUND_OFF_D =
+        "M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z";
+      let isMuted = true;
+      let ytReady = false;
+
+      // YouTube API
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(tag);
+
+      let player;
+      window.onYouTubeIframeAPIReady = function () {
+        player = new YT.Player("ytPlayer", {
+          events: {
+            onReady: () => {
+              ytReady = true;
+              player.mute();
+              player.playVideo();
+            },
+          },
+        });
+      };
+
+      soundBtn.addEventListener("click", () => {
+        isMuted = !isMuted;
+        if (ytReady) {
+          if (isMuted) {
+            player.mute();
+            soundBtn.classList.add("muted");
+            soundPath.setAttribute("d", SOUND_OFF_D);
+          } else {
+            player.unMute();
+            soundBtn.classList.remove("muted");
+            soundPath.setAttribute("d", SOUND_ON_D);
+          }
+        }
+      });
+
+      soundBtn.classList.add("muted");
+
+      // Dynamic Supernova Favicon
+      function generateFavicon() {
+        const fc = document.createElement("canvas");
+        fc.width = 32;
+        fc.height = 32;
+        const fctx = fc.getContext("2d");
+
+        // Background
+        fctx.fillStyle = "#000";
+        fctx.fillRect(0, 0, 32, 32);
+
+        // Star glow
+        const g = fctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+        g.addColorStop(0, "rgba(255,255,255,1)");
+        g.addColorStop(0.2, "rgba(255,215,0,0.9)");
+        g.addColorStop(0.5, "rgba(255,100,0,0.5)");
+        g.addColorStop(0.8, "rgba(255,50,0,0.2)");
+        g.addColorStop(1, "transparent");
+        fctx.fillStyle = g;
+        fctx.fillRect(0, 0, 32, 32);
+
+        // Explosion rays
+        fctx.save();
+        fctx.translate(16, 16);
+        for (let i = 0; i < 8; i++) {
+          fctx.rotate(0.785);
+          const rg = fctx.createLinearGradient(0, 0, 16, 0);
+          rg.addColorStop(0, "rgba(255,200,100,0.8)");
+          rg.addColorStop(1, "transparent");
+          fctx.beginPath();
+          fctx.moveTo(0, -0.5);
+          fctx.lineTo(16, 0);
+          fctx.lineTo(0, 0.5);
+          fctx.fillStyle = rg;
+          fctx.fill();
+        }
+        fctx.restore();
+
+        // Bright center
+        fctx.beginPath();
+        fctx.arc(16, 16, 3, 0, 6.28);
+        fctx.fillStyle = "#fff";
+        fctx.fill();
+
+        // Debris particles
+        for (let i = 0; i < 12; i++) {
+          const angle = (i / 12) * 6.28;
+          const dist = 8 + Math.random() * 8;
+          const px = 16 + Math.cos(angle) * dist;
+          const py = 16 + Math.sin(angle) * dist;
+          fctx.beginPath();
+          fctx.arc(px, py, 1, 0, 6.28);
+          fctx.fillStyle = `hsl(${30 + Math.random() * 30}, 100%, ${50 + Math.random() * 50}%)`;
+          fctx.fill();
+        }
+
+        return fc.toDataURL();
+      }
+
+      // Set favicon
+      const favicon = document.createElement("link");
+      favicon.rel = "icon";
+      favicon.type = "image/png";
+      favicon.href = generateFavicon();
+      document.head.appendChild(favicon);
+
+      // Also set apple-touch-icon
+      const appleIcon = document.createElement("link");
+      appleIcon.rel = "apple-touch-icon";
+      appleIcon.href = generateFavicon();
+      document.head.appendChild(appleIcon);
+
+      // --- OPERATIONS HUB & SYSTEM TRAY ENGINE ---
+
+      const hubPanel = document.getElementById("hubPanel");
+      const hubToggleBtn = document.getElementById("hubToggleBtn");
+      const hubCloseBtn = document.getElementById("hubCloseBtn");
+      const trayMenuBtn = document.getElementById("trayMenuBtn");
+      const trayMenu = document.getElementById("trayMenu");
+      const soulsGrid = document.getElementById("soulsGrid");
+      const soulSearchInput = document.getElementById("soulSearchInput");
+      const btnToggleGravity = document.getElementById("btnToggleGravity");
+      const btnToggleFilaments = document.getElementById("btnToggleFilaments");
+      const btnTriggerNova = document.getElementById("btnTriggerNova");
+      const btnClearNovas = document.getElementById("btnClearNovas");
+      const hubAudioToggleBtn = document.getElementById("hubAudioToggleBtn");
+      const audioHubStatus = document.getElementById("audioHubStatus");
+
+      // Populate Souls Grid
+      function populateSouls(filterText = "") {
+        if (!soulsGrid) return;
+        soulsGrid.innerHTML = "";
+        names
+          .filter(name => name.toLowerCase().includes(filterText.toLowerCase()))
+          .forEach(name => {
+            const tag = document.createElement("div");
+            tag.className = "soul-tag" + (activeSoulHighlight === name ? " highlight" : "");
+            tag.textContent = name;
+            tag.addEventListener("click", () => {
+              activeSoulHighlight = (activeSoulHighlight === name) ? null : name;
+              populateSouls(soulSearchInput.value);
+            });
+            soulsGrid.appendChild(tag);
+          });
+      }
+      populateSouls();
+
+      if (soulSearchInput) {
+        soulSearchInput.addEventListener("input", (e) => {
+          populateSouls(e.target.value);
+        });
+      }
+
+      // Hub Navigation Tabs
+      const hubTabBtns = document.querySelectorAll(".hub-tab-btn");
+      const hubSections = document.querySelectorAll(".hub-section");
+      hubTabBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          hubTabBtns.forEach(b => b.classList.remove("active"));
+          hubSections.forEach(s => s.classList.remove("active"));
+          btn.classList.add("active");
+          const tabId = "tab-" + btn.getAttribute("data-tab");
+          const targetSection = document.getElementById(tabId);
+          if (targetSection) targetSection.classList.add("active");
+        });
+      });
+
+      // Toggle Hub
+      function toggleHub() {
+        if (!hubPanel) return;
+        const isActive = hubPanel.classList.toggle("active");
+        if (trayMenu) trayMenu.classList.remove("active");
+      }
+      if (hubToggleBtn) hubToggleBtn.addEventListener("click", toggleHub);
+      if (hubCloseBtn) hubCloseBtn.addEventListener("click", () => hubPanel.classList.remove("active"));
+
+      // System Tray Menu Toggle
+      if (trayMenuBtn) {
+        trayMenuBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          trayMenu.classList.toggle("active");
+        });
+      }
+      document.addEventListener("click", (e) => {
+        if (trayMenu && !trayMenu.contains(e.target) && e.target !== trayMenuBtn) {
+          trayMenu.classList.remove("active");
+        }
+      });
+
+      // Tray Quick Actions
+      const trayTriggerNova = document.getElementById("trayTriggerNova");
+      if (trayTriggerNova) {
+        trayTriggerNova.addEventListener("click", () => {
+          userSupernovae.push(new Supernova(cx, cy, false));
+          trayMenu.classList.remove("active");
+        });
+      }
+      const trayToggleHub = document.getElementById("trayToggleHub");
+      if (trayToggleHub) {
+        trayToggleHub.addEventListener("click", () => {
+          toggleHub();
+          trayMenu.classList.remove("active");
+        });
+      }
+      const trayToggleAudio = document.getElementById("trayToggleAudio");
+      if (trayToggleAudio) {
+        trayToggleAudio.addEventListener("click", () => {
+          if (soundBtn) soundBtn.click();
+          trayMenu.classList.remove("active");
+        });
+      }
+      const trayQuitServer = document.getElementById("trayQuitServer");
+      if (trayQuitServer) {
+        trayQuitServer.addEventListener("click", () => {
+          const banner = document.getElementById("runtimeStatus");
+          if (banner) {
+            banner.textContent = "SERVER SHUTDOWN SIMULATED";
+            banner.style.color = "#ff6b6b";
+          }
+          trayMenu.classList.remove("active");
+        });
+      }
+
+      // Physics Controls
+      if (btnToggleGravity) {
+        btnToggleGravity.addEventListener("click", () => {
+          mouseGravityEnabled = !mouseGravityEnabled;
+          btnToggleGravity.textContent = mouseGravityEnabled ? "Enabled" : "Disabled";
+          btnToggleGravity.classList.toggle("active-state", mouseGravityEnabled);
+        });
+      }
+      if (btnToggleFilaments) {
+        btnToggleFilaments.addEventListener("click", () => {
+          filamentsEnabled = !filamentsEnabled;
+          btnToggleFilaments.textContent = filamentsEnabled ? "Enabled" : "Disabled";
+          btnToggleFilaments.classList.toggle("active-state", filamentsEnabled);
+        });
+      }
+      if (btnTriggerNova) {
+        btnTriggerNova.addEventListener("click", () => {
+          userSupernovae.push(new Supernova(cx, cy, false));
+        });
+      }
+      if (btnClearNovas) {
+        btnClearNovas.addEventListener("click", () => {
+          userSupernovae = [];
+        });
+      }
+
+      // Synchronize Audio Hub Status
+      if (hubAudioToggleBtn && soundBtn) {
+        hubAudioToggleBtn.addEventListener("click", () => {
+          soundBtn.click();
+        });
+      }
+
+      // Update soundBtn listener to sync status text
+      const origSoundBtnClick = soundBtn ? soundBtn.onclick : null;
+      if (soundBtn) {
+        soundBtn.addEventListener("click", () => {
+          if (audioHubStatus) {
+            audioHubStatus.textContent = isMuted ? "Muted (Click to play)" : "Playing Ambient Stream";
+            audioHubStatus.style.color = isMuted ? "#ff6b6b" : "#00ff88";
+          }
+        });
+      }
+
+      // Keyboard Shortcuts
+      document.addEventListener("keydown", (e) => {
+        if (e.target.tagName === "INPUT") return;
+        if (e.key === "Tab") {
+          e.preventDefault();
+          toggleHub();
+        } else if (e.key === "Escape") {
+          if (hubPanel) hubPanel.classList.remove("active");
+          if (trayMenu) trayMenu.classList.remove("active");
+        } else if (e.key === "m" || e.key === "M") {
+          if (soundBtn) soundBtn.click();
+        } else if (e.key === " ") {
+          e.preventDefault();
+          userSupernovae.push(new Supernova(cx, cy, false));
+        }
+      });
+
+    </script>

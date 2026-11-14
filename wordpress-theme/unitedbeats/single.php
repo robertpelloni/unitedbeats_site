@@ -1,0 +1,1 @@
+<?php get_header(); while(have_posts()): the_post(); ?><article class="ub-card"><h1><?php the_title(); ?></h1><div class="ub-meta"><?php echo get_the_date(); ?></div><?php the_content(); ?></article><?php endwhile; get_footer(); ?>

@@ -1,0 +1,13 @@
+/*
+Theme Name: UnitedBeats Legacy
+Description: Preserves the legacy unitedbeats.org homepage exactly; WordPress posts below the fold and project pages.
+Version: 1.0.0
+*/
+body.ub-inner{background:linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.55)),url("bg-building.jpg") center/cover no-repeat fixed #000;color:#eee;font-family:Inter,system-ui,sans-serif;margin:0}
+.ub-wrap{max-width:900px;margin:0 auto;padding:6rem 1.25rem 4rem}
+.ub-nav{display:flex;flex-wrap:wrap;gap:.6rem;margin:0 0 2rem;padding:0;list-style:none}
+.ub-nav a{color:#ffd700;text-decoration:none;border:1px solid rgba(255,215,0,.35);padding:.45rem .8rem;border-radius:999px;background:rgba(0,0,0,.5);font-size:.9rem}
+.ub-nav a:hover{background:rgba(255,215,0,.15)}
+.ub-card{background:rgba(0,0,0,.72);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:1.25rem;margin:0 0 1rem}
+.ub-card a{color:#ffd700}
+.ub-meta{opacity:.75;font-size:.85rem}
